@@ -23,6 +23,7 @@ import { SellerSalesPage } from '@/pages/dashboard/seller-sales'
 import { BuyerDashboardPage } from '@/pages/dashboard/buyer-dashboard'
 import { BuyerGuard } from '@/components/guards/buyer-guard'
 import { SellerCreateListingPage } from '@/pages/dashboard/seller-create-listing'
+import { SellerEditListingPage } from '@/pages/dashboard/seller-edit-listing'
 import { SellerNotificationsPage } from '@/pages/dashboard/seller-notifications'
 import { SellerSupportPage } from '@/pages/dashboard/seller-support'
 
@@ -158,6 +159,7 @@ export const router = createBrowserRouter([
       { index: true, element: <SellerOverviewPage /> },
       { path: 'create', element: <SellerCreateListingPage /> },
       { path: 'listings', element: <SellerListingsPage /> },
+      { path: 'listings/:id/edit', element: <SellerEditListingPage /> },
       { path: 'auctions', element: <SellerAuctionsPage /> },
       { path: 'inspections', element: <SellerInspectionsPage /> },
       { path: 'sales', element: <SellerSalesPage /> },

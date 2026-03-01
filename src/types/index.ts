@@ -287,3 +287,82 @@ export interface BuyerDashboardData {
   savedFilters: SavedFilter[]
   verificationStatus: KycVerificationStatus
 }
+
+/* Intake Wizard Types */
+export type DraftStatus = 'draft' | 'ready' | 'submitted'
+export type EnrichmentStatus = 'pending' | 'complete' | 'failed'
+
+export interface DraftPhoto {
+  url: string
+  angle: string
+  size?: number
+  mimeType?: string
+  order?: number
+}
+
+export interface DraftData {
+  identifier?: string
+  enrichment?: Record<string, unknown>
+  enrichmentStatus?: EnrichmentStatus
+  specs?: Record<string, unknown>
+  photos?: DraftPhoto[]
+  qa?: IntakeQAResult
+  reservePrice?: number
+  estimatedValue?: number
+  pickupLocation?: string
+  auctionBatch?: string
+  paymentTerms?: string
+  fees?: number
+  title?: string
+  description?: string
+  make?: string
+  model?: string
+  year?: string
+}
+
+export interface IntakeQAResult {
+  hardFails: string[]
+  warnings: string[]
+  tags: string[]
+  confidence: number
+  evidenceImages: string[]
+  overallScore?: number
+  pass?: boolean
+}
+
+export interface Draft {
+  id: string
+  sellerId: string
+  data: DraftData
+  step: number
+  status: DraftStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OpsNote {
+  id: string
+  listingId: string
+  note: string
+  createdAt: string
+}
+
+export const REQUIRED_PHOTO_ANGLES = [
+  'Front',
+  'Side',
+  'Back',
+  'Top',
+  'Angle A',
+  'Angle B',
+  'Angle C',
+  'Angle D',
+  'Angle E',
+  'Interior',
+  'Detail 1',
+  'Detail 2',
+  'Detail 3',
+  'Serial/ID',
+  'Condition',
+] as const
+
+export type PhotoAngle = (typeof REQUIRED_PHOTO_ANGLES)[number]

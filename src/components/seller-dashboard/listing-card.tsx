@@ -94,7 +94,7 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`/dashboard/seller/create?edit=${listing.id}`}>
+                    <Link to={`/dashboard/seller/listings/${listing.id}/edit`}>
                       <Edit className="mr-2 h-4 w-4" />
                       Edit
                     </Link>
@@ -134,7 +134,7 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
               </Button>
               {['draft', 'pending_review'].includes(listing.status) && (
                 <Button size="sm" asChild>
-                  <Link to={`/dashboard/seller/create?edit=${listing.id}`}>
+                  <Link to={`/dashboard/seller/listings/${listing.id}/edit`}>
                     <Edit className="mr-1.5 h-4 w-4" />
                     Edit
                   </Link>
