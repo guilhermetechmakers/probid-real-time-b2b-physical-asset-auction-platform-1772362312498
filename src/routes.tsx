@@ -4,9 +4,9 @@ import { Footer } from '@/components/layout/footer'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LandingPage } from '@/pages/landing'
 import { SignInSignUpPage } from '@/pages/auth'
-import { ForgotPasswordPage } from '@/pages/forgot-password'
 import { VerifyEmailPage } from '@/pages/verify-email'
-import { ResetPasswordPage } from '@/pages/reset-password'
+import { PasswordResetPage } from '@/pages/password-reset'
+import { PasswordResetResetPage } from '@/pages/password-reset-reset'
 import { AuthCallbackPage } from '@/pages/auth-callback'
 import { MarketplacePage } from '@/pages/marketplace'
 import { HowItWorksPage } from '@/pages/how-it-works'
@@ -65,20 +65,28 @@ export const router = createBrowserRouter([
     element: <Navigate to="/auth?mode=signup" replace />,
   },
   {
-    path: '/forgot-password',
+    path: '/auth/password-reset',
     element: (
       <MainLayout>
-        <ForgotPasswordPage />
+        <PasswordResetPage />
       </MainLayout>
     ),
   },
   {
-    path: '/reset-password',
+    path: '/auth/password-reset/reset',
     element: (
       <MainLayout>
-        <ResetPasswordPage />
+        <PasswordResetResetPage />
       </MainLayout>
     ),
+  },
+  {
+    path: '/forgot-password',
+    element: <Navigate to="/auth/password-reset" replace />,
+  },
+  {
+    path: '/reset-password',
+    element: <Navigate to="/auth/password-reset/reset" replace />,
   },
   {
     path: '/marketplace',
