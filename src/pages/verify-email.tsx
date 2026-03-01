@@ -37,12 +37,19 @@ export function VerifyEmailPage() {
                 may take a few minutes to arrive.
               </p>
               <p className="text-xs text-muted-foreground">
-                Didn&apos;t receive the email? Check your spam folder or{' '}
+                Didn&apos;t receive the email? Check your spam folder,{' '}
                 <Link
                   to="/auth"
                   className="text-primary hover:underline"
                 >
                   try again
+                </Link>
+                , or{' '}
+                <Link
+                  to="/verify"
+                  className="text-primary hover:underline"
+                >
+                  resend verification
                 </Link>
                 .
               </p>

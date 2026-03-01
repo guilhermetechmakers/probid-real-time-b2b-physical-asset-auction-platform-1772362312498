@@ -8,6 +8,7 @@ export { PasswordStrengthMeter } from './password-strength-meter'
 export { EmailVerificationGuideLink } from './email-verification-guide-link'
 export { BuyerKYCIntro } from './buyer-kyc-intro'
 export { LegalLinks } from './legal-links'
+export { SupportModal } from './support-modal'
 export {
   SignUpStepper,
   signUpReducer,

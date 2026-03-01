@@ -71,3 +71,24 @@ export interface Bid {
   amount: number
   createdAt: string
 }
+
+/** User payload returned after successful email verification */
+export interface VerificationUser {
+  id: string
+  email: string
+  name?: string
+  emailVerified?: boolean
+}
+
+/** Response from verify-email API */
+export interface VerificationResponse {
+  success: boolean
+  message?: string
+  data?: VerificationUser
+}
+
+/** Response from resend-verification API */
+export interface ResendVerificationResponse {
+  success: boolean
+  message?: string
+}

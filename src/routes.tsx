@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LandingPage } from '@/pages/landing'
 import { SignInSignUpPage } from '@/pages/auth'
 import { VerifyEmailPage } from '@/pages/verify-email'
+import { EmailVerificationPage } from '@/pages/email-verification'
 import { PasswordResetPage } from '@/pages/password-reset'
 import { PasswordResetResetPage } from '@/pages/password-reset-reset'
 import { AuthCallbackPage } from '@/pages/auth-callback'
@@ -47,6 +48,14 @@ export const router = createBrowserRouter([
   {
     path: '/auth/callback',
     element: <AuthCallbackPage />,
+  },
+  {
+    path: '/verify',
+    element: (
+      <MainLayout>
+        <EmailVerificationPage />
+      </MainLayout>
+    ),
   },
   {
     path: '/auth/verify-email',
