@@ -30,6 +30,7 @@ import { SellerSupportPage } from '@/pages/dashboard/seller-support'
 import { CheckoutPage } from '@/pages/checkout'
 import { TransactionHistoryPage } from '@/pages/dashboard/transaction-history'
 import { CartDepositsPage } from '@/pages/dashboard/cart-deposits'
+import { HelpAboutPage } from '@/pages/help-about'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -231,9 +232,7 @@ export const router = createBrowserRouter([
     path: '/about',
     element: (
       <MainLayout>
-        <div className="container flex min-h-[50vh] items-center justify-center px-4 py-16">
-          <p className="text-muted-foreground">About page coming soon.</p>
-        </div>
+        <HelpAboutPage />
       </MainLayout>
     ),
   },
@@ -241,9 +240,7 @@ export const router = createBrowserRouter([
     path: '/help',
     element: (
       <MainLayout>
-        <div className="container flex min-h-[50vh] items-center justify-center px-4 py-16">
-          <p className="text-muted-foreground">Help & Support coming soon.</p>
-        </div>
+        <HelpAboutPage />
       </MainLayout>
     ),
   },

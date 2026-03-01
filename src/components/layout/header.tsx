@@ -35,6 +35,12 @@ export function Header() {
           >
             How It Works
           </Link>
+          <Link
+            to="/help"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Help
+          </Link>
           {user ? (
             <>
               <Link
@@ -84,6 +90,9 @@ export function Header() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/how-it-works">How It Works</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/help">Help</Link>
               </DropdownMenuItem>
               {user ? (
                 <>

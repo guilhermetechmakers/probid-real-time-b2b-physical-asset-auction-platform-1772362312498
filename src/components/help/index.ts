@@ -1,0 +1,8 @@
+export { SectionCard } from './section-card'
+export { DocLinkList } from './doc-link-list'
+export { FAQAccordion } from './faq-accordion'
+export { OnboardingGuideCard } from './onboarding-guide'
+export { SupportTicketForm } from './support-ticket-form'
+export { LegalBlockComponent } from './legal-block'
+export { SearchBar } from './search-bar'
+export { FooterNote } from './footer-note'
