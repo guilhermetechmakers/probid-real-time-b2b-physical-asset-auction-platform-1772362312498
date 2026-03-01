@@ -68,7 +68,7 @@ export function ForgotPasswordPage() {
                 inbox and follow the instructions.
               </p>
               <Button variant="outline" asChild className="w-full">
-                <Link to="/login">Back to login</Link>
+                <Link to="/auth?mode=login">Back to login</Link>
               </Button>
             </div>
           ) : (
@@ -93,7 +93,7 @@ export function ForgotPasswordPage() {
             </form>
           )}
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            <Link to="/login" className="font-medium text-primary hover:underline">
+            <Link to="/auth?mode=login" className="font-medium text-primary hover:underline">
               Back to login
             </Link>
           </p>

@@ -62,10 +62,10 @@ export function Header() {
           ) : (
             <div className="flex items-center gap-2">
               <Button variant="ghost" asChild>
-                <Link to="/login">Log in</Link>
+                <Link to="/auth?mode=login">Log in</Link>
               </Button>
               <Button asChild>
-                <Link to="/signup">Get Started</Link>
+                <Link to="/auth?mode=signup">Get Started</Link>
               </Button>
             </div>
           )}
@@ -102,10 +102,10 @@ export function Header() {
               ) : (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link to="/login">Log in</Link>
+                    <Link to="/auth?mode=login">Log in</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/signup">Get Started</Link>
+                    <Link to="/auth?mode=signup">Get Started</Link>
                   </DropdownMenuItem>
                 </>
               )}

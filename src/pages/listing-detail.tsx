@@ -35,7 +35,7 @@ export function ListingDetailPage() {
                 </div>
               </div>
               <Button className="mt-6 w-full" asChild>
-                <Link to="/login">Log in to bid</Link>
+                <Link to="/auth?mode=login">Log in to bid</Link>
               </Button>
             </CardContent>
           </Card>

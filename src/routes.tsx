@@ -3,9 +3,11 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LandingPage } from '@/pages/landing'
-import { LoginPage } from '@/pages/login'
-import { SignupPage } from '@/pages/signup'
+import { SignInSignUpPage } from '@/pages/auth'
 import { ForgotPasswordPage } from '@/pages/forgot-password'
+import { VerifyEmailPage } from '@/pages/verify-email'
+import { ResetPasswordPage } from '@/pages/reset-password'
+import { AuthCallbackPage } from '@/pages/auth-callback'
 import { MarketplacePage } from '@/pages/marketplace'
 import { HowItWorksPage } from '@/pages/how-it-works'
 import { SettingsPage } from '@/pages/settings'
@@ -35,26 +37,46 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/login',
+    path: '/auth',
     element: (
       <MainLayout>
-        <LoginPage />
+        <SignInSignUpPage />
       </MainLayout>
     ),
   },
   {
-    path: '/signup',
+    path: '/auth/callback',
+    element: <AuthCallbackPage />,
+  },
+  {
+    path: '/auth/verify-email',
     element: (
       <MainLayout>
-        <SignupPage />
+        <VerifyEmailPage />
       </MainLayout>
     ),
+  },
+  {
+    path: '/login',
+    element: <Navigate to="/auth?mode=login" replace />,
+  },
+  {
+    path: '/signup',
+    element: <Navigate to="/auth?mode=signup" replace />,
   },
   {
     path: '/forgot-password',
     element: (
       <MainLayout>
         <ForgotPasswordPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/reset-password',
+    element: (
+      <MainLayout>
+        <ResetPasswordPage />
       </MainLayout>
     ),
   },

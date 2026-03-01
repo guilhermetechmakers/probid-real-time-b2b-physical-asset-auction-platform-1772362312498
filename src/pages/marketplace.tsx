@@ -54,7 +54,7 @@ export function MarketplacePage() {
           More listings coming soon. Create an account to list or bid.
         </p>
         <Button asChild className="mt-4">
-          <Link to="/signup">Get Started</Link>
+          <Link to="/auth?mode=signup">Get Started</Link>
         </Button>
       </div>
     </div>

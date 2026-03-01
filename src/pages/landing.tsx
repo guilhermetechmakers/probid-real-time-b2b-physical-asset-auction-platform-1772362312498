@@ -63,7 +63,7 @@ export function LandingPage() {
               asChild
               className="bg-[#EFFD2D] text-[#161616] hover:bg-[#EFFD2D]/90 hover:shadow-[0_0_24px_rgba(239,253,45,0.4)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
             >
-              <Link to="/signup">Get Started</Link>
+              <Link to="/auth?mode=signup">Get Started</Link>
             </Button>
             <Button
               variant="outline"
