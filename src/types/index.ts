@@ -167,3 +167,123 @@ export interface ActivityEvent {
   actor?: string
   targetId?: string
 }
+
+/* Buyer Dashboard Types */
+export type BuyerKycStatus = 'pending' | 'submitted' | 'approved' | 'rejected'
+export type VerificationState = 'pending' | 'in_review' | 'verified' | 'rejected'
+export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled' | 'past_due'
+export type BidOutcome = 'won' | 'lost' | 'outbid' | 'pending'
+
+export interface Buyer {
+  id: string
+  kycStatus: BuyerKycStatus
+  verificationStatus: VerificationState
+  adminApproved: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Subscription {
+  id: string
+  buyerId: string
+  planId: string
+  planName?: string
+  status: SubscriptionStatus
+  currentPeriodStart?: string
+  currentPeriodEnd?: string
+  nextBillingDate?: string
+}
+
+export type BuyerAuctionStatus = 'scheduled' | 'live' | 'ended' | 'cancelled'
+
+export interface BuyerAuction {
+  id: string
+  listingId: string
+  assetTitle?: string
+  assetCategory?: string
+  assetLocation?: string
+  assetCondition?: string
+  imageUrls?: string[]
+  scheduledAt: string
+  status: BuyerAuctionStatus
+  currentBid?: number
+  reservePrice?: number
+  batchId?: string
+  listing?: {
+    id: string
+    title: string
+    category?: string
+    location?: string
+    condition?: string
+    imageUrls?: string[]
+  }
+}
+
+export interface WatchlistItem {
+  id: string
+  buyerId: string
+  listingId: string
+  listing?: { id: string; title?: string; category?: string; imageUrls?: string[]; currentBid?: number; status?: string }
+  alertEnabled: boolean
+  alertPreferences?: Record<string, unknown>
+  createdAt?: string
+}
+
+export interface BiddingHistoryItem {
+  id: string
+  auctionId: string
+  listingId?: string
+  listingTitle?: string
+  assetTitle?: string
+  amount: number
+  createdAt: string
+  status: BidOutcome
+}
+
+/** @deprecated Use BiddingHistoryItem */
+export type BidHistoryItem = BiddingHistoryItem
+
+export interface SavedFilter {
+  id: string
+  buyerId?: string
+  name: string
+  filters: {
+    category?: string
+    location?: string
+    condition?: string
+    priceMin?: number
+    priceMax?: number
+  }
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface KycVerificationStatus {
+  status: BuyerKycStatus
+  kycStatus?: 'pending' | 'approved' | 'rejected'
+  verificationStatus?: 'pending' | 'submitted' | 'approved' | 'rejected'
+  adminApproved: boolean
+  adminReviewStatus?: string
+  requiredActions?: string[]
+  submittedAt?: string
+}
+
+/** API-compatible verification status (buyer dashboard) */
+export interface VerificationStatus {
+  kycStatus: 'pending' | 'approved' | 'rejected'
+  verificationStatus: 'pending' | 'submitted' | 'approved' | 'rejected'
+  adminApproved: boolean
+  hasPendingSubmission?: boolean
+}
+
+/** API-compatible subscription info */
+export type SubscriptionInfo = Subscription
+
+export interface BuyerDashboardData {
+  auctions: BuyerAuction[]
+  watchlist: WatchlistItem[]
+  biddingHistory: BiddingHistoryItem[]
+  subscription: Subscription | null
+  savedFilters: SavedFilter[]
+  verificationStatus: KycVerificationStatus
+}

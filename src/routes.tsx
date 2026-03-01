@@ -20,7 +20,8 @@ import { SellerListingsPage } from '@/pages/dashboard/seller-listings'
 import { SellerAuctionsPage } from '@/pages/dashboard/seller-auctions'
 import { SellerInspectionsPage } from '@/pages/dashboard/seller-inspections'
 import { SellerSalesPage } from '@/pages/dashboard/seller-sales'
-import { BuyerOverviewPage } from '@/pages/dashboard/buyer-overview'
+import { BuyerDashboardPage } from '@/pages/dashboard/buyer-dashboard'
+import { BuyerGuard } from '@/components/guards/buyer-guard'
 import { SellerCreateListingPage } from '@/pages/dashboard/seller-create-listing'
 import { SellerNotificationsPage } from '@/pages/dashboard/seller-notifications'
 import { SellerSupportPage } from '@/pages/dashboard/seller-support'
@@ -141,6 +142,10 @@ export const router = createBrowserRouter([
     element: <Navigate to="/dashboard/buyer" replace />,
   },
   {
+    path: '/buyer/dashboard',
+    element: <Navigate to="/dashboard/buyer" replace />,
+  },
+  {
     path: '/dashboard/seller',
     element: (
       <MainLayout>
@@ -164,13 +169,15 @@ export const router = createBrowserRouter([
     path: '/dashboard/buyer',
     element: (
       <MainLayout>
-        <DashboardLayout />
+        <BuyerGuard>
+          <DashboardLayout />
+        </BuyerGuard>
       </MainLayout>
     ),
     children: [
-      { index: true, element: <BuyerOverviewPage /> },
-      { path: 'auctions', element: <BuyerOverviewPage /> },
-      { path: 'watchlist', element: <BuyerOverviewPage /> },
+      { index: true, element: <BuyerDashboardPage /> },
+      { path: 'auctions', element: <BuyerDashboardPage /> },
+      { path: 'watchlist', element: <BuyerDashboardPage /> },
     ],
   },
   {
