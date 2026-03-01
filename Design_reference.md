@@ -326,18 +326,20 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
-- Adhere to color palette, typography, and layout constraints described in Visual Style.
-- Cards with rounded corners, subtle shadows, and neon yellow-green accents for CTAs.
-- Persistent bottom navigation with icons; data visualizations use minimalist horizontal bars in neon yellow-green.
-- Buttons: uppercase, bold, neon yellow-green filled or outlined depending on action.
-- Ensure strong data hierarchy: current bid, time remaining, and reserve status are prominent.
+- Maintain a modern, minimal, high-contrast aesthetic.
+- Emphasize clarity and scan-ability with strong typographic hierarchy.
+- Use neon yellow-green for primary actions and data highlights; dark charcoal for navigation/icons; subtle borders and soft shadows for components.
+- Ensure accessibility: keyboard navigation, focus states, adequate color contrast, ARIA labeling for dynamic components.
+- Interaction patterns: rounded buttons, hover/active elevation, subtle micro-interactions for state changes.
+
+---
 
 ## Visual Style
 
-Color Palette:
+### Color Palette
 - Primary background: #FFFFFF
 - Secondary background: #F5F6FA
-- Primary accent: Neon yellow-green #EFFD2D
+- Primary accent: #EFFD2D
 - Secondary accent: #161616
 - Text primary: #181818
 - Text secondary: #7E7E7E
@@ -346,149 +348,39 @@ Color Palette:
 - Error: #FF4D4F
 - Tertiary accent: #FFFACD
 
-Typography & Layout:
-- Font: Inter or equivalent
-- Weights: 400, 500, 700
-- Grid/padding: Outer 20–24px, inner 12–16px; vertical stacking
-- Spacing: 8–16px between elements
+### Typography & Layout
+- Font family: Inter or similar geometric sans-serif
+- Weights: 400 body, 500 secondary, 700 headlines
+- Hierarchy: Large bold numbers for totals, mid-size bold section titles, smaller regular details
+- Layout: Grid with 20–24px outer padding, 12–16px internal; vertical stacking; 8–16px gaps
+- Alignment: Left data; centered icons for nav; clear grouping
 
-Key Design Elements:
-- Card with 12–16px radius; soft shadow
-- Hover state: glow with neon yellow-green
-- Data Viz: minimalist horizontal bars
-- Interactive elements: rounded buttons with neon fill or outline
+### Key Design Elements
+- Card Design: 12–16px radius, subtle shadow rgba(22,22,22,0.07); hover/active glow with neon accent
+- Navigation: Bottom fixed tab bar, pill-shaped, dark charcoal, active neon yellow-green icon
+- Data Visualization: Minimalist horizontal bars, neon fill for active, light gray for inactive
+- Interactive Elements: Rounded CTAs, neon-filled primary buttons, borderless inputs with focus underline or glow
 
-Design Philosophy:
-- Modern, minimal, high contrast
-- Clarity and scan-ability
-- Professional yet energetic accent
+### Design Philosophy
+- Modern, minimal, high-contrast with bold accents
+- Clarity, actionable data presentation, and tactile interactivity
+- Accessible, usable, and scalable across devices
+
+---
 
 ## Mandatory Coding Standards — Runtime Safety
 
-CRITICAL: All generated code must guard against null/undefined values before calling array methods.
+CRITICAL: All generated code must guard against null/undefined values before calling array methods and guard API results as described:
+1) Supabase query results: Always use const items = data ?? []
+2) Array methods: Never call on possibly null/undefined; use (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : []
+3) React useState for arrays/objects: Initialize with correct type e.g., useState<Invoice[]>([])
+4) API response shapes: const list = Array.isArray(response?.data) ? response.data : []
+5) Optional chaining: Use obj?.property?.nested
+6) Destructuring with defaults: const { items = [], count = 0 } = response ?? {}
 
-1. Supabase query results: Always use nullish coalescing — const items = data ?? [].
-2. Array methods: Guard calls with (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
-3. React useState for arrays/objects: Initialize arrays as useState<Type[]>([]) everywhere.
-4. API response shapes: Validate — const list = Array.isArray(response?.data) ? response.data : [].
-5. Optional chaining: Use obj?.property?.nested consistently for nested API results.
-6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
+---
 
-## Data Models (Schema Details)
-
-- Listing
-  - id (UUID)
-  - title (string)
-  - description (string)
-  - specs_json (JSON)
-  - vin_like_id (string)
-  - provenance (string)
-  - batch_id (UUID)
-  - auction_schedule_id (UUID)
-  - media_json (JSON)
-  - ai_qa_json (JSON)
-  - created_at, updated_at (timestamps)
-
-- Media
-  - id (UUID)
-  - listing_id (FK -> Listing)
-  - type (enum: image/video)
-  - url (string)
-  - angle_tag (string)
-  - position (int)
-
-- AiQaReport
-  - id (UUID)
-  - listing_id (FK)
-  - structured_json (JSON)
-  - confidence (float)
-  - flags_json (JSON)
-  - evidence_images_json (JSON)
-
-- AuctionBatch
-  - id (UUID)
-  - start_time (timestamp)
-  - end_time (timestamp)
-  - status (enum: scheduled/ongoing/ended)
-  - reserve (numeric)
-  - current_highest_bid (numeric)
-
-- Bid
-  - id (UUID)
-  - listing_id (FK)
-  - user_id (FK)
-  - amount (numeric)
-  - created_at (timestamp)
-  - is_proxy (boolean)
-  - proxy_max (numeric, nullable)
-  - status (enum: accepted/outbid/under-review)
-
-- Watchlist
-  - id (UUID)
-  - user_id (FK)
-  - listing_id (FK)
-  - created_at (timestamp)
-  - prefs_json (JSON)
-
-- NotificationPreference
-  - id (UUID)
-  - user_id (FK)
-  - channel (enum: email/sms/in-app)
-  - enabled (boolean)
-  - prefs_json (JSON)
-
-- User
-  - id (UUID)
-  - name, email, phone
-  - verified (boolean)
-  - deposits (numeric)
-
-- EventLog (for analytics)
-  - id
-  - listing_id
-  - event_type
-  - payload_json
-  - created_at
-
-## API Endpoints (Routes & Methods)
-
-- GET /api/listings/:id
-- GET /api/listings/:id/bids
-- POST /api/listings/:id/bids
-- POST /api/listings/:id/proxy-bids
-- POST /api/listings/:id/join-live
-- GET /api/listings/:id/ai-qa
-- GET /api/listings/:id/media
-- GET /api/search
-- POST /api/watchlist
-- GET /api/notifications/prefs
-- POST /api/notifications/prefs
-
-Security:
-- Use session-based auth, enforce RBAC, and Supabase Row-Level Security (RLS).
-- Validate all inputs server-side; sanitize all external API responses.
-
-Validation Rules:
-- Bid amounts must be >= minimum increment and <= user deposit or payment limit.
-- Proxy bid max must be >= current bid + min_increment.
-- Media uploads validated for count (15–25) and angle coverage.
-- AI QA results must be structured JSON per provider interface.
-
-## Acceptance Criteria (Expanded)
-- Robust null-safety in all data paths (see Runtime Safety section).
-- Real-time bidding and live room updates function correctly under high concurrency with no race conditions.
-- AI QA pipeline is pluggable; new providers can be swapped with minimal code changes.
-- End-to-end notifications trigger accurately and are deduplicated via idempotent webhooks.
-- Caching strategies deliver sub-second UI for listing detail and near-zero backend latency.
-
-## Additional Guidelines
-
-- Use a modular architecture with clear contracts between frontend components, API adapters, and backend services.
-- Emphasize testability: unit tests for data adapters, integration tests for bidding logic, and end-to-end tests for Live Auction Room flows.
-- Document decisions for AI QA provider boundaries, enrichment caching, and edge caching strategies.
-- Ensure the codebase enforces null-safety patterns by default and provides guard rails for all array-like data manipulations.
-
-If you need, I can tailor this prompt further to match your tooling (e.g., specific AI coding tool, LLM prompt style, or a test plan scaffold).
+This prompt provides a complete, actionable blueprint for building the Checkout / Payment experience with Stripe integration, post-auction flows, and robust webhook handling, while enforcing runtime safety and design guidelines consistent with the project. If you’d like, I can tailor the prompt to a specific tech stack version, add sample data schemas, or provide a starter code scaffold (folders, TS interfaces, and API route templates) that adheres to these requirements.
 
 ## Implementation Notes
 

@@ -27,6 +27,7 @@ import { SellerCreateListingPage } from '@/pages/dashboard/seller-create-listing
 import { SellerEditListingPage } from '@/pages/dashboard/seller-edit-listing'
 import { SellerNotificationsPage } from '@/pages/dashboard/seller-notifications'
 import { SellerSupportPage } from '@/pages/dashboard/seller-support'
+import { CheckoutPage } from '@/pages/checkout'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -128,6 +129,14 @@ export const router = createBrowserRouter([
     element: (
       <MainLayout>
         <ListingLivePage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/checkout/:auctionId',
+    element: (
+      <MainLayout>
+        <CheckoutPage />
       </MainLayout>
     ),
   },

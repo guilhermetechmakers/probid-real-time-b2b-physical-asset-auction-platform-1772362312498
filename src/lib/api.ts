@@ -59,7 +59,7 @@ export const api = {
     request<T>(endpoint, {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
-      headers: customHeaders,
+      headers: customHeaders as HeadersInit,
     }),
   put: <T>(endpoint: string, body?: unknown) =>
     request<T>(endpoint, { method: 'PUT', body: body ? JSON.stringify(body) : undefined }),

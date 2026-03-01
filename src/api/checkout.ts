@@ -1,8 +1,10 @@
 /**
  * Checkout API - post-auction payment flow.
+ * Uses Supabase Edge Functions when VITE_API_URL is empty.
  * All responses validated; array data guarded per runtime safety rules.
  */
 import { api } from '@/lib/api'
+import { supabase } from '@/lib/supabase'
 import type {
   InitializeCheckoutResponse,
   PayCheckoutRequest,
@@ -15,10 +17,31 @@ import type {
   WebhookAuditEntry,
 } from '@/types/checkout'
 
-function safeArray<T>(v: unknown): T[] {
-  if (v == null) return []
-  if (!Array.isArray(v)) return []
-  return v as T[]
+const API_BASE = import.meta.env.VITE_API_URL ?? ''
+const useSupabaseFunctions = !API_BASE
+
+function mapInvoiceRow(row: Record<string, unknown>): Invoice {
+  return {
+    id: String(row.id ?? ''),
+    auctionId: String(row.auctionId ?? row.auction_id ?? ''),
+    listingId: String(row.listingId ?? row.listing_id ?? ''),
+    buyerId: String(row.buyerId ?? row.buyer_id ?? ''),
+    sellerId: String(row.sellerId ?? row.seller_id ?? ''),
+    amount: Number(row.amount ?? 0),
+    currency: String(row.currency ?? 'USD'),
+    status: String(row.status ?? 'PENDING') as Invoice['status'],
+    dueDate: String(row.dueDate ?? row.due_date ?? ''),
+    tax: Number(row.tax ?? 0),
+    fees: Number(row.fees ?? 0),
+    discount: Number(row.discount ?? 0),
+    depositRequired: Boolean(row.depositRequired ?? row.deposit_required),
+    depositAmount: Number(row.depositAmount ?? row.deposit_amount ?? 0),
+    payoutInstructionsId: row.payout_instructions_id != null ? String(row.payout_instructions_id) : undefined,
+    invoicePdfUrl: typeof row.invoice_pdf_url === 'string' ? row.invoice_pdf_url : null,
+    receiptPdfUrl: typeof row.receipt_pdf_url === 'string' ? row.receipt_pdf_url : null,
+    createdAt: String(row.createdAt ?? row.created_at ?? ''),
+    updatedAt: String(row.updatedAt ?? row.updated_at ?? ''),
+  }
 }
 
 export async function initializeCheckout(
@@ -26,6 +49,13 @@ export async function initializeCheckout(
 ): Promise<InitializeCheckoutResponse | null> {
   if (!auctionId?.trim()) return null
   try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<InitializeCheckoutResponse>('checkout-initialize', {
+        body: { auctionId },
+      })
+      if (error) throw error
+      return data ?? null
+    }
     const data = await api.post<InitializeCheckoutResponse>(
       `/api/checkout/${encodeURIComponent(auctionId)}/initialize`,
       {}
@@ -41,6 +71,14 @@ export async function fetchInvoice(
 ): Promise<Invoice | null> {
   if (!auctionId?.trim()) return null
   try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ invoice?: Record<string, unknown> }>('checkout-invoice', {
+        body: { auctionId },
+      })
+      if (error) throw error
+      const raw = data?.invoice ?? null
+      return raw ? mapInvoiceRow(raw) : null
+    }
     const data = await api.get<{ invoice?: Invoice | null }>(
       `/api/checkout/${encodeURIComponent(auctionId)}/invoice`
     )
@@ -51,21 +89,59 @@ export async function fetchInvoice(
   }
 }
 
+export async function fetchInvoiceWithDeposit(
+  auctionId: string
+): Promise<{ invoice: Invoice | null; deposit: DepositHold | null }> {
+  if (!auctionId?.trim()) return { invoice: null, deposit: null }
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{
+        invoice?: Record<string, unknown>
+        deposit?: Record<string, unknown> | null
+      }>('checkout-invoice', { body: { auctionId } })
+      if (error) throw error
+      const inv = data?.invoice ? mapInvoiceRow(data.invoice) : null
+      const dep = data?.deposit
+        ? {
+            id: String(data.deposit.id ?? ''),
+            invoiceId: String(data.deposit.invoiceId ?? data.deposit.invoice_id ?? ''),
+            amount: Number(data.deposit.amount ?? 0),
+            status: String(data.deposit.status ?? 'HELD') as DepositHold['status'],
+            holdUntil: (typeof (data.deposit.holdUntil ?? data.deposit.hold_until) === 'string' ? (data.deposit.holdUntil ?? data.deposit.hold_until) : null) as string | null,
+            capturedAt: (typeof (data.deposit.capturedAt ?? data.deposit.captured_at) === 'string' ? (data.deposit.capturedAt ?? data.deposit.captured_at) : null) as string | null,
+            releasedAt: (typeof (data.deposit.releasedAt ?? data.deposit.released_at) === 'string' ? (data.deposit.releasedAt ?? data.deposit.released_at) : null) as string | null,
+          }
+        : null
+      return { invoice: inv, deposit: dep }
+    }
+    const inv = await fetchInvoice(auctionId)
+    return { invoice: inv, deposit: null }
+  } catch {
+    return { invoice: null, deposit: null }
+  }
+}
+
 export async function payCheckout(
   auctionId: string,
-  payload: PayCheckoutRequest,
+  payload: PayCheckoutRequest & { idempotencyKey?: string },
   idempotencyKey?: string
 ): Promise<PayCheckoutResponse | null> {
   if (!auctionId?.trim()) return null
-  const headers: Record<string, string> = {}
-  if (idempotencyKey) {
-    headers['Idempotency-Key'] = idempotencyKey
-  }
+  const key = idempotencyKey ?? payload.idempotencyKey ?? crypto.randomUUID()
+  const { idempotencyKey: _k, ...body } = payload
   try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<PayCheckoutResponse>('checkout-pay', {
+        body: { auctionId, paymentMethodId: body.paymentMethodId, idempotencyKey: key },
+      })
+      if (error) throw error
+      return data ?? null
+    }
+    const headers: Record<string, string> = { 'Idempotency-Key': key }
     const data = await api.postWithHeaders<PayCheckoutResponse>(
       `/api/checkout/${encodeURIComponent(auctionId)}/pay`,
-      payload,
-      Object.keys(headers).length > 0 ? headers : undefined
+      body,
+      headers
     )
     return data ?? null
   } catch {
@@ -78,6 +154,16 @@ export async function captureDeposit(
 ): Promise<{ success: boolean; error?: string }> {
   if (!invoiceId?.trim()) return { success: false, error: 'Invalid invoice' }
   try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; error?: string }>('checkout-capture-deposit', {
+        body: { invoiceId },
+      })
+      if (error) return { success: false, error: error.message }
+      return {
+        success: data?.success ?? false,
+        error: data?.error ?? undefined,
+      }
+    }
     const data = await api.post<{ success?: boolean; error?: string }>(
       `/api/checkout/${encodeURIComponent(invoiceId)}/capture-deposit`,
       {}
@@ -97,6 +183,27 @@ export async function fetchReceipt(
 ): Promise<ReceiptData | null> {
   if (!invoiceId?.trim()) return null
   try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<ReceiptData | { invoicePdfUrl?: string; receiptPdfUrl?: string }>('checkout-receipt', {
+        body: { invoiceId },
+      })
+      if (error) throw error
+      if (!data) return null
+      if ('amount' in data && typeof data.amount === 'number') {
+        return data as ReceiptData
+      }
+      const inv = await fetchInvoiceWithDeposit('')
+      const invoice = inv.invoice
+      return invoice
+        ? {
+            invoiceId,
+            amount: invoice.amount + invoice.fees + invoice.tax,
+            currency: invoice.currency,
+            paidAt: invoice.updatedAt,
+            downloadUrl: (data as { receiptPdfUrl?: string }).receiptPdfUrl ?? undefined,
+          }
+        : null
+    }
     const data = await api.get<ReceiptData | { receipt?: ReceiptData }>(
       `/api/checkout/${encodeURIComponent(invoiceId)}/receipt`
     )
@@ -111,6 +218,12 @@ export async function fetchReceipt(
 
 export async function fetchPaymentMethods(): Promise<PaymentMethod[]> {
   try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ methods?: PaymentMethod[] }>('checkout-payment-methods')
+      if (error) throw error
+      const methods = data?.methods ?? []
+      return Array.isArray(methods) ? methods : []
+    }
     const data = await api.get<{ methods?: PaymentMethod[] }>(
       '/api/checkout/payment-methods'
     )
@@ -123,6 +236,9 @@ export async function fetchPaymentMethods(): Promise<PaymentMethod[]> {
 
 export async function fetchWebhookAudit(): Promise<WebhookAuditEntry[]> {
   try {
+    if (useSupabaseFunctions) {
+      return []
+    }
     const data = await api.get<{ entries?: WebhookAuditEntry[] }>(
       '/api/admin/webhooks/audit'
     )

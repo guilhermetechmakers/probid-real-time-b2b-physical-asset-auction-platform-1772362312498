@@ -98,3 +98,34 @@ export interface FeesConfig {
   platformFeeFixed?: number
   taxRate?: number
 }
+
+export interface InvoiceSummary {
+  salePrice: number
+  fees: number
+  tax: number
+  discounts: number
+  total: number
+  currency: string
+  payoutToSeller: number
+  paymentDueDate: string
+  depositRequired: boolean
+  depositAmount: number
+}
+
+export interface ReceiptData {
+  invoiceId: string
+  amount: number
+  currency: string
+  paidAt?: string
+  downloadUrl?: string
+  invoicePdfUrl?: string | null
+  receiptPdfUrl?: string | null
+}
+
+export interface WebhookAuditEntry {
+  id: string
+  eventId: string
+  type: string
+  processedAt: string
+  status: 'PROCESSED' | 'ERROR'
+}
