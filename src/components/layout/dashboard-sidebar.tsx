@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Menu,
   ShoppingBag,
+  ShoppingCart,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -39,6 +40,7 @@ const buyerNavItems: NavItem[] = [
   { href: '/dashboard/buyer', label: 'Overview', icon: LayoutDashboard },
   { href: '/dashboard/buyer/auctions', label: 'Auctions', icon: Calendar },
   { href: '/dashboard/buyer/watchlist', label: 'Watchlist', icon: Heart },
+  { href: '/dashboard/buyer/cart', label: 'Cart', icon: ShoppingCart },
   { href: '/dashboard/buyer/orders', label: 'Orders', icon: ShoppingBag },
 ]
 

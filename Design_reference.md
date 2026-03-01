@@ -326,42 +326,68 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
-- Follow the color palette, typography, layout, and spacing described.
-- Card design with rounded corners, soft shadows, and neon yellow-green accents for CTAs.
-- Persistent bottom navigation with accessible icons; ensure active states use neon yellow-green fills.
-- Data visualization: slim horizontal bars in neon yellow-green for active data, light gray for inactive.
-- Inputs and controls: borderless or soft-background inputs with clear focus styles; actions are bold and uppercase for CTAs.
+- Follow the Visual Style, Color Palette, Typography, and Layout guidelines provided.
+- Card Design: elevation, rounded corners, subtle borders, neon yellow-green accents for CTAs.
+- Navigation: bottom tab bar with persistent navigation and icons.
+- Data Visualization: minimalist bars/charts for deposit-related metrics if needed.
+- Interactive Elements: bold CTA buttons; accessible focus states; smooth micro-interactions.
 
-Visual Style
-- Color Palette as specified: white, pale gray backgrounds, neon yellow-green accents, dark charcoal for nav, black text, gray secondary text, light borders, green success, red errors, soft yellow for notifications.
-- Typography: Inter-like sans-serif, weights 400/500/700, clear hierarchy for titles, section headers, and content.
-- Layout: grid-based, generous padding (outer 20-24px, inner 12-16px); consistent vertical stacking; left-aligned content; centered nav icons.
-- Cards: 12–16px radius, subtle dropshadow rgba(22,22,22,0.07).
-- Interactions: hover/active glow, micro-interactions for actions, smooth transitions.
+---
 
-Mandatory Coding Standards — Runtime Safety
-CRITICAL: All generated code MUST guard against null/undefined values before calling array methods.
-1) Supabase query results: Always use const items = data ?? [].
-2) Array methods: Guard: (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
-3) React useState for arrays: useState<Type[]>([]).
-4) API response shapes: const list = Array.isArray(response?.data) ? response.data : [].
-5) Optional chaining: Use obj?.property?.nested for nested API/db access.
-6) Destructuring with defaults: const { items = [], count = 0 } = response ?? {};
+## Visual Style
 
-Project Context Alignment
-- Target: Order / Transaction History page that supports Buyer and Seller views, displaying invoices, settlement, disputes, and logistics.
-- Connected: Dispute & Refund Workflow with audit trails and finance adjustments.
-- Tech stack: Next.js + TypeScript, Supabase, Tailwind CSS; real-time via Supabase Realtime; Stripe for payments; Vercel hosting.
-- UI/UX Philosophy: Modern, minimalist, high contrast; strong visual hierarchy; accessible and frictionless interactions.
+### Color Palette
+- Primary background: #FFFFFF
+- Secondary background: #F5F6FA
+- Primary accent: #EFFD2D
+- Secondary accent: #161616
+- Text primary: #181818
+- Text secondary: #7E7E7E
+- Borders/dividers: #E5E5EA
+- Success: #2ED573
+- Error: #FF4D4F
+- Tertiary: #FFFACD
 
-Provide the complete, detailed prompt for AI development tool
-- Include all sections above with explicit field examples, data structures, API contracts, and UI component contracts.
-- Include explicit guardrails and runtime safety statements to ensure generated code adheres to the runtime safety rules.
-- Include sample data shapes for Transactions, Invoices, Disputes, Logistics, and Audit trails to guide scaffolding.
-- Include test cases (unit and integration) that validate null safety, role-based access, dispute lifecycle, and CSV export. 
-- Include a code skeleton outline (files and folders) to help scaffold the project.
+### Typography & Layout
+- Font: Inter or similar
+- Weights: 400/500/700
+- Grid: 20–24px outer padding; 12–16px inner; 8–16px gaps
+- Alignment: Left data, centered icons in nav
 
-This prompt should now be ready for an AI development tool to generate a complete, ready-to-build Order / Transaction History feature with the Dispute & Refund Workflow integration, compliant with the specified runtime safety constraints.
+### Key Design Elements
+- Card: radius 12–16px, subtle shadow, hover glow
+- Navigation: bottom, pill-shaped, dark with neon accents
+- Data Visualization: small horizontal bars with neon accent
+- Interactive elements: rounded CTAs, borderless inputs, clear focus
+- Design Philosophy: usability-first, accessible, high-contrast, action-driven
+
+---
+
+## Mandatory Coding Standards — Runtime Safety
+
+CRITICAL: Follow these rules in ALL generated code to prevent runtime crashes.
+
+1. Supabase query results: Always use nullish coalescing — const items = data ?? [].
+2. Array methods: Never call on null/undefined; guard:
+   - (items ?? []).map(...)
+   - Array.isArray(items) ? items.map(...) : []
+3. React useState for arrays/objects: Always initialize with correct type — useState<Type[]>([]).
+4. API response shapes: const list = Array.isArray(response?.data) ? response.data : [].
+5. Optional chaining: Use obj?.property?.nested when accessing nested API results.
+6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {};
+
+---
+
+### Deliverables for AI Development Tool
+- Complete frontend components: DepositCard, DepositCartList, CheckoutModal, DepositRequirementsPanel, RealTimeStatusTicker.
+- Complete backend API suite with proper validation, RBAC, and Stripe webhook handling.
+- Supabase schema for deposits, deposit_events, audit_logs; example seed data.
+- Real-time integration configuration (Supabase Realtime/WebSockets) and client subscriptions.
+- Stripe integration module with idempotent webhook processing and audit logging.
+- Full test suite scaffolding (unit, integration, end-to-end) focusing on runtime safety rules and webhook idempotency.
+- Documentation: API contracts, data models, webhook flows, and deployment instructions.
+
+This prompt provides a comprehensive, actionable blueprint for building the Cart / Deposits feature with Stripe integration, real-time updates, robust security, and strict runtime safety guarantees as mandated.
 
 ## Implementation Notes
 

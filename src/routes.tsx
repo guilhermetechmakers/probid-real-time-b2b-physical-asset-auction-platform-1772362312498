@@ -29,6 +29,7 @@ import { SellerNotificationsPage } from '@/pages/dashboard/seller-notifications'
 import { SellerSupportPage } from '@/pages/dashboard/seller-support'
 import { CheckoutPage } from '@/pages/checkout'
 import { TransactionHistoryPage } from '@/pages/dashboard/transaction-history'
+import { CartDepositsPage } from '@/pages/dashboard/cart-deposits'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -200,6 +201,7 @@ export const router = createBrowserRouter([
       { index: true, element: <BuyerDashboardPage /> },
       { path: 'auctions', element: <BuyerDashboardPage /> },
       { path: 'watchlist', element: <BuyerDashboardPage /> },
+      { path: 'cart', element: <CartDepositsPage /> },
       { path: 'orders', element: <TransactionHistoryPage /> },
     ],
   },
