@@ -42,6 +42,7 @@ import {
   AdminDisputesPage,
   AdminRbacPage,
   AdminAuditLogsPage,
+  AdminAnalyticsPage,
 } from '@/pages/admin'
 import { AdminDashboardShell } from '@/components/admin/admin-dashboard-shell'
 
@@ -244,6 +245,7 @@ export const router = createBrowserRouter([
       { path: 'disputes', element: <AdminDisputesPage /> },
       { path: 'rbac', element: <AdminRbacPage /> },
       { path: 'audit-logs', element: <AdminAuditLogsPage /> },
+      { path: 'analytics', element: <AdminAnalyticsPage /> },
     ],
   },
   {

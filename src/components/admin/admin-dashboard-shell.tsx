@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   Shield,
   FileText,
+  BarChart3,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -26,6 +27,7 @@ const adminNavItems = [
   { href: '/admin/dashboard/disputes', label: 'Disputes', icon: AlertTriangle },
   { href: '/admin/dashboard/rbac', label: 'RBAC', icon: Shield },
   { href: '/admin/dashboard/audit-logs', label: 'Audit Logs', icon: FileText },
+  { href: '/admin/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
 ]
 
 interface AdminDashboardShellProps {
