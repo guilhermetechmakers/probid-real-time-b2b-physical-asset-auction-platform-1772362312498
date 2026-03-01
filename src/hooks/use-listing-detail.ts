@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase'
 import {
   fetchListingDetail,
   fetchBidHistory,
+  fetchRelatedListings,
   placeBid,
   setupProxyBid,
   toggleWatchlist,
@@ -23,6 +24,8 @@ const LISTING_DETAIL_KEYS = {
   bids: (id: string) => ['listing-detail', id, 'bids'] as const,
   watch: (id: string) => ['listing-detail', id, 'watch'] as const,
   watchPrefs: (id: string) => ['listing-detail', id, 'watch-prefs'] as const,
+  related: (id: string, category?: string) =>
+    ['listing-detail', id, 'related', category ?? ''] as const,
 }
 
 export function useListingDetail(id: string | undefined) {
@@ -37,6 +40,23 @@ export function useListingDetail(id: string | undefined) {
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
+    refetch: query.refetch,
+  }
+}
+
+export function useRelatedListings(
+  listingId: string | undefined,
+  category?: string
+) {
+  const query = useQuery({
+    queryKey: LISTING_DETAIL_KEYS.related(listingId ?? '', category),
+    queryFn: () => fetchRelatedListings(listingId!, category),
+    enabled: Boolean(listingId?.trim()),
+  })
+  const listings = Array.isArray(query.data) ? query.data : []
+  return {
+    listings,
+    isLoading: query.isLoading,
     refetch: query.refetch,
   }
 }

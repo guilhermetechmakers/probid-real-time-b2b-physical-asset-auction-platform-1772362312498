@@ -10,6 +10,7 @@ import { useSubscriptionActive } from '@/hooks/use-marketplace'
 import {
   useListingDetail,
   useBidHistory,
+  useRelatedListings,
   usePlaceBid,
   useWatchStatus,
   useToggleWatch,
@@ -20,8 +21,10 @@ import {
   SpecsPanel,
   AiQaReportPanel,
   AuctionSummaryCard,
+  AuctionSchedulePanel,
   BidWidget,
   BidHistoryPanel,
+  RelatedListingsPanel,
   WatchlistToggle,
   LiveCTAGroup,
 } from '@/components/listing-detail'
@@ -32,6 +35,8 @@ export function ListingDetailPage() {
   const { user } = useAuth()
   const { listing, isLoading, isError } = useListingDetail(id)
   const { bids, isLoading: bidsLoading } = useBidHistory(id)
+  const { listings: relatedListings, isLoading: relatedLoading } =
+    useRelatedListings(id, listing?.category)
   const placeBidMutation = usePlaceBid(id)
   const { isWatching } = useWatchStatus(id)
   const toggleWatchMutation = useToggleWatch(id)
@@ -149,6 +154,12 @@ export function ListingDetailPage() {
             startingPrice={listing.startingPrice}
           />
 
+          <AuctionSchedulePanel
+            auction={auction}
+            reservePrice={listing.reservePrice}
+            currentBid={currentBid}
+          />
+
           <div className="rounded-2xl border border-[rgb(var(--border))] bg-card p-6 shadow-card">
             <h3 className="mb-4 font-semibold">Place a bid</h3>
             <BidWidget
@@ -172,6 +183,13 @@ export function ListingDetailPage() {
             isSubscribed={isSubscribed}
           />
         </div>
+      </div>
+
+      <div className="mt-12">
+        <RelatedListingsPanel
+          listings={relatedListings}
+          isLoading={relatedLoading}
+        />
       </div>
     </div>
   )

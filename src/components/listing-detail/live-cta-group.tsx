@@ -48,7 +48,7 @@ export function LiveCTAGroup({
           <Button
             asChild
             size="lg"
-            className="w-full sm:w-auto hover:shadow-accent-glow animate-pulse"
+            className="w-full sm:w-auto font-bold uppercase hover:shadow-accent-glow animate-pulse"
           >
             <Link to={livePath}>
               <Zap className="mr-2 h-4 w-4" />
@@ -59,7 +59,7 @@ export function LiveCTAGroup({
             asChild
             variant="outline"
             size="lg"
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto font-bold uppercase border-2 hover:border-primary"
           >
             <Link to={livePath}>
               <Gavel className="mr-2 h-4 w-4" />

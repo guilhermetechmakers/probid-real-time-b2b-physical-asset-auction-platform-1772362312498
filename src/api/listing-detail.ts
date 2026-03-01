@@ -391,3 +391,48 @@ export async function setupProxyBid(
 ): Promise<{ success: boolean; error?: string }> {
   return placeBid(listingId, maxAmount, true, maxAmount)
 }
+
+export interface RelatedListingSummary {
+  id: string
+  title: string
+  identifier?: string
+  currentBid?: number
+  reservePrice?: number
+  thumbnailUrl?: string
+  status: string
+}
+
+export async function fetchRelatedListings(
+  listingId: string,
+  category?: string,
+  limit = 4
+): Promise<RelatedListingSummary[]> {
+  if (!listingId?.trim()) return []
+
+  let query = supabase
+    .from('listings')
+    .select('id, title, identifier, current_bid, reserve_price, image_urls, status')
+    .neq('id', listingId)
+    .in('status', ['approved', 'scheduled', 'live'])
+    .limit(limit)
+
+  if (category?.trim()) {
+    query = query.eq('category', category.trim())
+  }
+
+  const { data: rows } = await query
+  const arr = Array.isArray(rows) ? rows : []
+
+  return arr.map((row: Record<string, unknown>, i: number) => {
+    const imageUrls = Array.isArray(row.image_urls) ? (row.image_urls as string[]) : []
+    return {
+      id: String(row.id ?? `rel-${i}`),
+      title: String(row.title ?? ''),
+      identifier: row.identifier != null ? String(row.identifier) : undefined,
+      currentBid: row.current_bid != null ? Number(row.current_bid) : undefined,
+      reservePrice: row.reserve_price != null ? Number(row.reserve_price) : undefined,
+      thumbnailUrl: imageUrls[0],
+      status: String(row.status ?? ''),
+    }
+  })
+}

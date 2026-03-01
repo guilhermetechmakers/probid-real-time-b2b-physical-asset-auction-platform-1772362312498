@@ -1,24 +1,27 @@
 /**
- * LiveAuctionRoom - Real-time room for running auctions with live bids, timer, chat.
+ * LiveAuctionRoomPage - Real-time room with timer, bids, chat, quick-bid panel.
  */
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { useParams } from 'react-router-dom'
 import {
   useListingDetail,
   useBidHistory,
   usePlaceBid,
   useSetupProxyBid,
   useBidsRealtime,
+  getMinBidIncrement,
 } from '@/hooks/use-listing-detail'
 import {
-  LiveBidPanel,
-  AuctionTimer,
-  ChatPanel,
-  ProxyBidPanel,
+  AuctionHeader,
+  LiveBidFeed,
+  QuickBidPanel,
+  OpsAnnouncementsPanel,
+  ChatFeed,
+  BidHistoryTimeline,
+  StatsMiniCard,
 } from '@/components/live-auction'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/contexts/auth-context'
+import type { AuctionStatusPill } from '@/components/ui/status-pill'
 
 export function ListingLivePage() {
   const { id } = useParams()
@@ -30,18 +33,36 @@ export function ListingLivePage() {
 
   const auction = listing?.auction ?? null
   const currentBid = listing?.currentBid ?? auction?.currentHighestBid ?? 0
+  const minIncrement = getMinBidIncrement(currentBid)
 
   useBidsRealtime(id, auction?.id)
+
+  const status: AuctionStatusPill =
+    auction?.status === 'cancelled'
+      ? 'ended'
+      : auction?.status === 'live'
+        ? 'live'
+        : auction?.status === 'ended'
+          ? 'ended'
+          : 'scheduled'
 
   const handlePlaceBid = (amount: number) => {
     if (!id) return
     placeBidMutation.mutate({ amount })
   }
 
-  const handleSetProxyBid = (maxAmount: number) => {
+  const handlePlaceProxyBid = (maxAmount: number) => {
     if (!id) return
     setupProxyBidMutation.mutate(maxAmount)
   }
+
+  const avgBid =
+    bids.length > 0
+      ? bids.reduce((s, b) => s + b.amount, 0) / bids.length
+      : 0
+  const uniqueBidders = new Set(
+    (bids ?? []).map((b) => b.anonymizedBuyerId)
+  ).size
 
   if (isLoading || !listing) {
     return (
@@ -57,67 +78,57 @@ export function ListingLivePage() {
 
   return (
     <div className="container space-y-6 px-4 py-8 md:px-6">
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" asChild>
-          <Link to={`/listing/${id}`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to listing
-          </Link>
-        </Button>
-      </div>
+      <AuctionHeader
+        listingId={listing.id}
+        title={listing.title}
+        identifier={listing.identifier}
+        currentBid={currentBid}
+        reservePrice={listing.reservePrice}
+        reserveMet={
+          (listing.reservePrice ?? 0) <= 0 || currentBid >= (listing.reservePrice ?? 0)
+        }
+        status={status}
+        endTime={auction?.endTime}
+        remainingSeconds={auction?.remainingTimeSeconds}
+        bidCount={bids.length}
+      />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-2xl border-2 border-primary/50 bg-primary/5 p-6">
-            <h1 className="text-2xl font-bold">{listing.title}</h1>
-            <p className="mt-1 text-muted-foreground">
-              Live Auction • {listing.identifier ?? '—'}
-            </p>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <LiveBidFeed bids={bids} maxHeight={280} />
+            <div className="space-y-6">
+              <OpsAnnouncementsPanel announcements={[]} />
+              <ChatFeed messages={[]} canPost={false} />
+            </div>
           </div>
 
-          <AuctionTimer
-            endTime={auction?.endTime}
-            remainingSeconds={auction?.remainingTimeSeconds}
-            status={
-              auction?.status === 'cancelled'
-                ? 'ended'
-                : (auction?.status ?? 'scheduled')
-            }
-          />
-
-          <ChatPanel messages={[]} />
+          <BidHistoryTimeline bids={bids} maxItems={15} />
         </div>
 
         <div className="space-y-6">
-          <LiveBidPanel
-            currentBid={currentBid}
-            onPlaceBid={handlePlaceBid}
-            isPlacing={placeBidMutation.isPending}
-          />
+          <div className="rounded-2xl border border-[rgb(var(--border))] bg-card p-6 shadow-card">
+            <h3 className="mb-4 font-semibold uppercase tracking-wider">
+              Place bid
+            </h3>
+            <QuickBidPanel
+              currentBid={currentBid}
+              minIncrement={minIncrement}
+              reservePrice={listing.reservePrice}
+              onPlaceBid={handlePlaceBid}
+              onPlaceProxyBid={handlePlaceProxyBid}
+              isPlacing={
+                placeBidMutation.isPending || setupProxyBidMutation.isPending
+              }
+              isAuthenticated={!!user}
+            />
+          </div>
 
-          <ProxyBidPanel
-            currentBid={currentBid}
-            reservePrice={listing.reservePrice}
-            onSetProxyBid={handleSetProxyBid}
-            isSetting={setupProxyBidMutation.isPending}
-            isAuthenticated={!!user}
+          <StatsMiniCard
+            averageBid={avgBid}
+            bidCount={bids.length}
+            uniqueBidders={uniqueBidders}
           />
-
-          {bids.length > 0 && (
-            <div className="rounded-xl border border-[rgb(var(--border))] p-4">
-              <h3 className="font-semibold">Recent bids</h3>
-              <ul className="mt-2 space-y-2">
-                {bids.slice(0, 5).map((b) => (
-                  <li key={b.id} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{b.anonymizedBuyerId}</span>
-                    <span className="font-bold text-primary">
-                      ${b.amount.toLocaleString()}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
     </div>
