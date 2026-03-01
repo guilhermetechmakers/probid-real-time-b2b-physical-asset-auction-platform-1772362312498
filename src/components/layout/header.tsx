@@ -43,6 +43,14 @@ export function Header() {
           </Link>
           {user ? (
             <>
+              {(user.role === 'admin' || user.role === 'ops') && (
+                <Link
+                  to="/admin/dashboard"
+                  className="text-sm font-medium text-probid-accent transition-colors hover:opacity-90"
+                >
+                  Admin
+                </Link>
+              )}
               <Link
                 to={user.role === 'seller' ? '/dashboard/seller' : '/dashboard/buyer'}
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -96,6 +104,11 @@ export function Header() {
               </DropdownMenuItem>
               {user ? (
                 <>
+                  {(user.role === 'admin' || user.role === 'ops') && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin/dashboard">Admin</Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link to={user.role === 'seller' ? '/dashboard/seller' : '/dashboard/buyer'}>
                       Dashboard

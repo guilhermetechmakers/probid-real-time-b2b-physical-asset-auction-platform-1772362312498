@@ -19,8 +19,9 @@ export interface ConfirmDialogProps {
   confirmLabel?: string
   cancelLabel?: string
   variant?: 'default' | 'destructive'
-  onConfirm: () => void | Promise<void>
+  onConfirm: () => void | Promise<void | boolean>
   isLoading?: boolean
+  children?: React.ReactNode
 }
 
 export function ConfirmDialog({
@@ -33,10 +34,11 @@ export function ConfirmDialog({
   variant = 'destructive',
   onConfirm,
   isLoading = false,
+  children,
 }: ConfirmDialogProps) {
   const handleConfirm = async () => {
-    await onConfirm()
-    onOpenChange(false)
+    const result = await onConfirm()
+    if (result !== false) onOpenChange(false)
   }
 
   return (
@@ -46,6 +48,7 @@ export function ConfirmDialog({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
+        {children}
         <DialogFooter className="gap-2 sm:gap-0">
           <Button
             variant="outline"

@@ -1,5 +1,6 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { SellerGuard } from '@/components/guards/seller-guard'
+import { AdminGuard } from '@/components/guards/admin-guard'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
@@ -31,6 +32,17 @@ import { CheckoutPage } from '@/pages/checkout'
 import { TransactionHistoryPage } from '@/pages/dashboard/transaction-history'
 import { CartDepositsPage } from '@/pages/dashboard/cart-deposits'
 import { HelpAboutPage } from '@/pages/help-about'
+import {
+  AdminOverviewPage,
+  AdminOpsQueuePage,
+  AdminBuyersPage,
+  AdminAuctionsPage,
+  AdminFinancePage,
+  AdminDisputesPage,
+  AdminRbacPage,
+  AdminAuditLogsPage,
+} from '@/pages/admin'
+import { AdminDashboardShell } from '@/components/admin/admin-dashboard-shell'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -204,6 +216,32 @@ export const router = createBrowserRouter([
       { path: 'watchlist', element: <BuyerDashboardPage /> },
       { path: 'cart', element: <CartDepositsPage /> },
       { path: 'orders', element: <TransactionHistoryPage /> },
+    ],
+  },
+  {
+    path: '/admin',
+    element: <Navigate to="/admin/dashboard" replace />,
+  },
+  {
+    path: '/admin/dashboard',
+    element: (
+      <MainLayout>
+        <AdminGuard>
+          <AdminDashboardShell>
+            <Outlet />
+          </AdminDashboardShell>
+        </AdminGuard>
+      </MainLayout>
+    ),
+    children: [
+      { index: true, element: <AdminOverviewPage /> },
+      { path: 'ops', element: <AdminOpsQueuePage /> },
+      { path: 'buyers', element: <AdminBuyersPage /> },
+      { path: 'auctions', element: <AdminAuctionsPage /> },
+      { path: 'finance', element: <AdminFinancePage /> },
+      { path: 'disputes', element: <AdminDisputesPage /> },
+      { path: 'rbac', element: <AdminRbacPage /> },
+      { path: 'audit-logs', element: <AdminAuditLogsPage /> },
     ],
   },
   {
