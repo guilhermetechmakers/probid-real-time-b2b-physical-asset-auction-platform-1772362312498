@@ -326,68 +326,242 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
-- Follow the Visual Style, Color Palette, Typography, and Layout guidelines provided.
-- Card Design: elevation, rounded corners, subtle borders, neon yellow-green accents for CTAs.
-- Navigation: bottom tab bar with persistent navigation and icons.
-- Data Visualization: minimalist bars/charts for deposit-related metrics if needed.
-- Interactive Elements: bold CTA buttons; accessible focus states; smooth micro-interactions.
+neon yellow-green accents for CTAs, dark charcoal for nav, etc.
+- API integrations:
+  - Stripe (Billing and Webhooks) for subscriptions and invoices; support for idempotent webhooks.
+  - Supabase for user data, auth, and Realtime updates (with proper RLS where applicable).
+  - Admin approval endpoints for KYC status changes.
+  - External services for KYC/identity checks and integration settings (configurable).
+  - Optional integrations for notifications (email/SMS/push providers).
+- Accessibility and UX notes:
+  - All forms must have accessible labels, proper focus states, and error messaging.
+  - Keyboard navigable, with clear visual hierarchy and feedback on actions.
 
----
+## Components to Build
+- SettingsDashboard
+  - Layout with left navigation (sections) and right content panes; persistent bottom navigation as per design system.
+- ProfileCard
+  - Editable fields: name, email, company name, contact, payout/bank details (masked where appropriate).
+  - Save/Cancel actions with optimistic UI and error handling.
+- NotificationsPanel
+  - Toggles for Email, SMS, Push; per-event toggles (Outbid, Auction Start, Inspection Scheduling).
+  - Summary badge of enabled channels.
+- SubscriptionPanel
+  - Current plan summary, renewal date, next billing amount.
+  - Actions: Upgrade/Downgrade, View Invoices, Manage Payment Methods (Stripe).
+  - Invoices list with pagination; safe rendering with data ?? [].
+- KYCPanel
+  - Status badge (Pending, In Review, Verified, Rejected).
+  - Admin actions: Approve, Request Changes, Reject (conditional on user role).
+  - Guidance steps and required actions.
+- IntegrationsPanel
+  - List of integrations with toggles and configuration fields per integration.
+  - Add/Remove integration capabilities where applicable.
+- EnterpriseAPIKeysPanel
+  - Key table: key name, scopes, created date, last used, status.
+  - Actions: Generate Key, Regenerate, Revoke.
+  - Copy-to-clipboard, and basic usage hints.
+- SecurityPanel
+  - Change Password form; 2FA enrollment status with action to enable/verify.
+  - Active Sessions: list with device, location, last active, and Revoke option.
+- ConfirmDialog / Toasts
+  - Reusable confirmation dialogs for destructive actions (revoke API key, revoke sessions, etc.)
+- Subcomponents
+  - Field, Input, Select, Toggle, Button, Card, Avatar, SectionHeader
+  - DataDisplay components for status and KPI-like visuals.
 
-## Visual Style
+## Implementation Requirements
 
-### Color Palette
-- Primary background: #FFFFFF
-- Secondary background: #F5F6FA
-- Primary accent: #EFFD2D
-- Secondary accent: #161616
-- Text primary: #181818
-- Text secondary: #7E7E7E
-- Borders/dividers: #E5E5EA
-- Success: #2ED573
-- Error: #FF4D4F
-- Tertiary: #FFFACD
+### Frontend
+- Tech stack: Next.js (App Router), TypeScript, Tailwind CSS.
+- Components must be modular, reusable, accessible, and theme-consistent.
+- State management:
+  - Use React useState/useEffect for local UI state.
+  - Use useSWR or custom hooks for data fetching with null-safe patterns: e.g., const data = (apiResponse?.data ?? []).
+  - All array-based rendering must guard against non-arrays and null: (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
+- Data handling:
+  - Initialize all arrays in useState with correct types, e.g., useState<Invoice[]>([]) for invoices.
+  - Validate API responses before using: const invoices = Array.isArray(response?.data) ? response.data : [].
+- Forms:
+  - Controlled components with onChange handlers; validation per-field with inline error messages.
+  - Debounced inputs where appropriate (e.g., API key names) to avoid unnecessary requests.
+- API communications:
+  - Centralized API client with error handling and retry logic.
+  - Respect the CRITICAL runtime safety rules for all data manipulations.
+- UI behavior:
+  - Persist settings locally in state and submit via PATCH/PUT to backend endpoints.
+  - Show optimistic UI updates for immediate feedback where appropriate (with rollback on error).
+- Security:
+  - Do not expose sensitive data in the frontend; redact tokens and keys in lists unless explicitly allowed.
+  - Ensure 2FA and KYC admin flows require proper authorization checks.
 
-### Typography & Layout
-- Font: Inter or similar
-- Weights: 400/500/700
-- Grid: 20–24px outer padding; 12–16px inner; 8–16px gaps
-- Alignment: Left data, centered icons in nav
+### Backend
+- Endpoints (examples; implement as per project conventions):
+  - GET /api/settings/profile -> user profile data
+  - PATCH /api/settings/profile -> update profile
+  - GET /api/settings/notifications -> notification preferences
+  - PATCH /api/settings/notifications -> update
+  - GET /api/settings/subscription -> subscription details
+  - POST /api/settings/subscription/upgrade -> upgrade/downgrade flow
+  - GET /api/settings/kyc -> KYC status
+  - POST /api/settings/kyc/approve -> admin approve
+  - POST /api/settings/kyc/reject -> admin reject
+  - GET /api/settings/integrations -> configured integrations
+  - POST /api/settings/integrations -> add/update
+  - GET /api/settings/apikeys -> enterprise API keys
+  - POST /api/settings/apikeys -> generate key
+  - POST /api/settings/apikeys/:id/regenerate -> regenerate
+  - DELETE /api/settings/apikeys/:id -> revoke
+  - GET /api/settings/sessions -> active sessions
+  - POST /api/settings/sessions/:id/revoke -> revoke session
+- Database modeling (Postgres with RLS):
+  - users: id, profile fields, kyc_status, subscription_id, 2fa_enabled, etc.
+  - subscriptions: id, plan_id, status, current_period_end, invoicing
+  - invoices: id, subscription_id, amount_due, status, period_start, period_end
+  - kycs: id, user_id, status, reviewer_id, notes, created_at
+  - integrations: id, user_id, type, config_json
+  - api_keys: id, user_id, name, key_hash, scopes, created_at, last_used_at, status
+  - sessions: id, user_id, device, last_active, ip_address, is_active
+- Validation and safety:
+  - Validate inputs server-side with strict schemas.
+  - Use idempotent Stripe webhooks for billing events.
+  - Enforce RBAC for admin-only endpoints (KYC approvals, API key revocation, etc.).
+- Data integrity:
+  - Ensure null-safe joins; expose defaults in responses.
 
-### Key Design Elements
-- Card: radius 12–16px, subtle shadow, hover glow
-- Navigation: bottom, pill-shaped, dark with neon accents
-- Data Visualization: small horizontal bars with neon accent
-- Interactive elements: rounded CTAs, borderless inputs, clear focus
-- Design Philosophy: usability-first, accessible, high-contrast, action-driven
+### Integration
+- Connect frontend to backend through the centralized API client.
+- Stripe:
+  - Retrieve current plan/invoices; initiate upgrades/downgrades; handle payment methods.
+  - Webhook endpoints on the backend must be idempotent and auditable.
+- Supabase:
+  - Use Realtime for any live updates (e.g., subscription status changes, KYC review status) if applicable.
+- Admin workflow:
+  - KYC status updates trigger notifications to users and admin dashboards.
+  - Ensure that gating logic in the frontend reflects backend decisions in near real-time.
+- Notifications:
+  - Wire up email/SMS/push providers per project conventions; allow per-event controls in UI.
 
----
+## User Experience Flow
+- Step 1: User lands on Settings / Preferences; sees a dashboard with sections: Profile, Notifications, Subscription, KYC, Integrations, Enterprise API Keys, Security.
+- Step 2: Profile: User edits fields, clicks Save; UI validates, shows success or error, persists via PATCH.
+- Step 3: Notifications: User toggles channels and per-event preferences; changes saved via PATCH; a summary banner confirms changes.
+- Step 4: Subscription: User views current plan, next renewal; clicks Upgrade/Downgrade; Stripe handles billing; on success, UI updates to reflect new plan; invoices listed with download.
+- Step 5: KYC: User views status; if Pending/Requires Action, guidance shown; if Admin action required, user is prompted to upload additional docs or await admin review.
+- Step 6: Integrations: User configures integrations; saves configurations; enabled toggles reflect status; errors shown inline.
+- Step 7: Enterprise API Keys: Admin/enterprise user can generate a new key, name it, set scopes; keys are stored securely; user can Regenerate or Revoke; key material is shown once at creation with safe handling.
+- Step 8: Security: User can change password, enroll in 2FA; view active sessions and revoke as needed.
+- Step 9: All changes show non-intrusive toasts; errors show inline with actionable steps.
 
-## Mandatory Coding Standards — Runtime Safety
+## Technical Specifications
 
-CRITICAL: Follow these rules in ALL generated code to prevent runtime crashes.
+Data Models: (Key fields to design)
+- users: id, email, name, company, contact_phone, payout_account_id, kyc_status, two_fa_enabled, etc.
+- subscriptions: id, user_id, plan_id, status, current_period_end, trial_end
+- plans: id, name, stripe_plan_id, features
+- invoices: id, subscription_id, amount_due, currency, status, period_start, period_end
+- kycs: id, user_id, status, submitted_at, reviewed_at, reviewer_id, notes
+- integrations: id, user_id, type, config_json
+- api_keys: id, user_id, name, key_hash, scopes, created_at, last_used_at, status
+- sessions: id, user_id, device, os, location, last_active, ip, is_active
 
-1. Supabase query results: Always use nullish coalescing — const items = data ?? [].
-2. Array methods: Never call on null/undefined; guard:
-   - (items ?? []).map(...)
-   - Array.isArray(items) ? items.map(...) : []
-3. React useState for arrays/objects: Always initialize with correct type — useState<Type[]>([]).
-4. API response shapes: const list = Array.isArray(response?.data) ? response.data : [].
-5. Optional chaining: Use obj?.property?.nested when accessing nested API results.
-6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {};
+API Endpoints: Routes and methods (summaries)
+- GET /api/settings/profile
+- PATCH /api/settings/profile
+- GET /api/settings/notifications
+- PATCH /api/settings/notifications
+- GET /api/settings/subscription
+- POST /api/settings/subscription/upgrade
+- POST /api/settings/subscription/downgrade
+- GET /api/settings/invoices
+- GET /api/settings/kyc
+- POST /api/settings/kyc/approve (admin)
+- POST /api/settings/kyc/reject (admin)
+- GET /api/settings/integrations
+- POST /api/settings/integrations
+- PATCH /api/settings/integrations/:id
+- GET /api/settings/apikeys
+- POST /api/settings/apikeys
+- POST /api/settings/apikeys/:id/regenerate
+- DELETE /api/settings/apikeys/:id
+- GET /api/settings/sessions
+- POST /api/settings/sessions/:id/revoke
 
----
+Security
+- Authentication: JWT/session-based; ensure protected routes.
+- Authorization: Role-based (user, admin, enterprise) with checks on KYC approvals and API key management.
+- Data integrity: Validate all inputs; sanitize; avoid leaking sensitive fields.
+- Webhooks: Idempotent handling for Stripe; proper event verification.
 
-### Deliverables for AI Development Tool
-- Complete frontend components: DepositCard, DepositCartList, CheckoutModal, DepositRequirementsPanel, RealTimeStatusTicker.
-- Complete backend API suite with proper validation, RBAC, and Stripe webhook handling.
-- Supabase schema for deposits, deposit_events, audit_logs; example seed data.
-- Real-time integration configuration (Supabase Realtime/WebSockets) and client subscriptions.
-- Stripe integration module with idempotent webhook processing and audit logging.
-- Full test suite scaffolding (unit, integration, end-to-end) focusing on runtime safety rules and webhook idempotency.
-- Documentation: API contracts, data models, webhook flows, and deployment instructions.
+Validation
+- Validate all input fields with clear error messages.
+- Use server-side validation in addition to client-side.
+- Guard all array operations in frontend with (array ?? []).map(...) and Array.isArray checks.
 
-This prompt provides a comprehensive, actionable blueprint for building the Cart / Deposits feature with Stripe integration, real-time updates, robust security, and strict runtime safety guarantees as mandated.
+Acceptance Criteria
+- [ ] Settings page loads with all sections and shows correct initial values from backend.
+- [ ] Profile updates persist and reflect instantly with no crashes; null-safe rendering of lists (invoices, API keys, sessions).
+- [ ] Notification toggles save and reflect correctly; per-event settings functional.
+- [ ] Subscription shows current plan, next billing, and can upgrade/downgrade; invoices retrievable; Stripe webhooks idempotent.
+- [ ] KYC status displays correctly; admin actions available when user is in a reviewable state; gating reflects admin decisions.
+- [ ] Integrations can be added/edited; configuration saved; toggles reflect state.
+- [ ] Enterprise API Keys: ability to generate, regenerate, revoke; proper access control; keys not exposed beyond creation view.
+- [ ] Security: password change, 2FA enrollment, sessions listing with revoke option; all actions acknowledged with toasts.
+- [ ] All array data rendering guarded to avoid runtime errors with null/undefined results.
+
+UI/UX Guidelines
+- Apply the project's design system thoroughly:
+  - Neon yellow-green (#EFFD2D) for CTAs and highlights.
+  - Dark charcoal (#161616) for navigation and icons.
+  - Crisp white cards (#FFFFFF) with soft shadows.
+  - Very light gray backgrounds (#F5F6FA) for separation.
+  - Use consistent spacing (8–16px gaps; 12–16px internal padding).
+  - Accessible typography with Inter-like font; weights 400/500/700.
+  - Card design with rounded corners (12–16px) and subtle elevation.
+  - Bottom fixed navigation with pill-shaped background and active neon highlight.
+  - Minimalist data visualization for any charts or bars (neon fill for active, light gray for inactive).
+
+Mandatory Coding Standards — Runtime Safety
+- Supabase results guarded:
+  - const items = data ?? [];
+  - (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
+- useState initializations:
+  - const [invoices, setInvoices] = useState<Invoice[]>([]);
+  - const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  - etc., never use useState() for arrays/objects.
+- API response validation:
+  - const profile = Array.isArray(response?.data) ? response.data[0] : {};
+  - const invoicesList = Array.isArray(response?.data?.invoices) ? response.data.invoices : [];
+- Optional chaining:
+  - const kycStatus = res?.data?.kyc_status;
+- Destructuring with defaults:
+  - const { items = [], count = 0 } = response ?? {};
+
+Project Context Notes
+- Target Platform: ProBid real-time B2B asset auction platform.
+- Core stack: Frontend Next.js (App Router) + TypeScript + Tailwind; Backend Supabase (Postgres, Realtime, Edge Functions); Stripe for payments; Admin/Ops workflow; RBAC and KYC gating.
+- Emphasis: Reuse-first modules; ensure Settings page aligns with Buyer Subscription & Verification gating; support admin approvals for KYC.
+
+Deliverables
+- Fully implemented Settings / Preferences page with all sub-sections described.
+- Frontend components, hooks, and styles aligned to the design system.
+- Backend API routes with input validation, RBAC, and Stripe integration hooks.
+- Documentation within code: JSDoc/TSDoc where appropriate; README-level overview of settings endpoints and data flows.
+- Tests (unit/integration) covering:
+  - Null-safety and array rendering guards.
+  - Subscription gating logic tied to KYC status.
+  - Admin approval workflow triggers and UI changes.
+  - API key generation/regeneration/revocation flows.
+  - Data validation for profile, notifications, and integration configurations.
+
+Notes for AI Development Tool
+- Build components with clear separation of concerns and prop-driven data.
+- Include error boundary handling for each panel.
+- Ensure all user-facing strings are i18n-ready placeholders if your project supports localization.
+- Provide feature flags or environment toggles to enable/disable enterprise API keys and admin-only workflows if needed.
+- Include unit tests and example mock data that adhere to the runtime safety patterns described above.
+
+This prompt defines a comprehensive, safe, and scalable Settings / Preferences feature that integrates the Buyer Subscription & Verification gating, aligns with the specified tech stack, and adheres to the strict runtime safety constraints specified.
 
 ## Implementation Notes
 
