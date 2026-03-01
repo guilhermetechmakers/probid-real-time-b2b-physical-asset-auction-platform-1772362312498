@@ -1,176 +1,81 @@
 import { Link } from 'react-router-dom'
-import { Camera, Gavel, Shield, Zap } from 'lucide-react'
+import {
+  HeroSection,
+  FeatureCardGrid,
+  HowItWorks,
+  PricingTeaser,
+  TrustBadges,
+} from '@/components/landing'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { landingContent } from '@/content/landing-content'
 
 export function LandingPage() {
+  const hero = landingContent?.hero
+  const features = Array.isArray(landingContent?.features)
+    ? landingContent.features
+    : []
+  const steps = Array.isArray(landingContent?.howItWorks)
+    ? landingContent.howItWorks
+    : []
+  const tiers = Array.isArray(landingContent?.pricingTeaser)
+    ? landingContent.pricingTeaser
+    : []
+  const trustLogos = Array.isArray(landingContent?.trustLogos)
+    ? landingContent.trustLogos
+    : []
+
   return (
-    <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-secondary/50 to-background">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(239,253,45,0.15)_0%,_transparent_50%)]" />
-        <div className="container relative px-4 py-24 md:px-6 md:py-32">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              Real-Time B2B Auctions for{' '}
-              <span className="bg-gradient-to-r from-primary to-probid-soft-yellow bg-clip-text text-transparent">
-                Physical Assets
-              </span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground md:text-xl">
-              Intelligent intake, AI-powered QA, and a correctness-first auction
-              engine. Enterprise-grade platform for sellers and buyers.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg" asChild>
-                <Link to="/signup">Get Started</Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link to="/marketplace">Browse Marketplace</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+    <main className="min-h-screen" role="main">
+      {hero ? (
+        <HeroSection
+          title={hero.title}
+          subtitle={hero.subtitle}
+          ctaPrimary={hero.ctaPrimary}
+          ctaSecondary={hero.ctaSecondary}
+          media={hero.media}
+        />
+      ) : (
+        <section className="container px-5 py-24 md:px-6">
+          <p className="text-center text-[#7E7E7E]">Hero content unavailable.</p>
+        </section>
+      )}
 
-      {/* Feature Grid - Bento style */}
-      <section className="container px-4 py-20 md:px-6">
-        <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
-          Why ProBid
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="md:col-span-2 transition-all duration-300 hover:shadow-accent-glow">
-            <CardContent className="p-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary">
-                  <Camera className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">
-                    Intelligent Intake + AI Vision QA
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
-                    Identifier-driven enrichment and pluggable AI vision pipeline
-                    for photo validation. Structured QA outputs with hard fails,
-                    warnings, and evidence for ops review.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="transition-all duration-300 hover:shadow-accent-glow">
-            <CardContent className="p-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary">
-                  <Gavel className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">Realtime Auctions</h3>
-                  <p className="mt-2 text-muted-foreground">
-                    Concurrency-safe bidding, proxy bids, anti-sniping, and
-                    reserve logic. Live updates via WebSockets.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="transition-all duration-300 hover:shadow-accent-glow">
-            <CardContent className="p-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary">
-                  <Shield className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">Ops-First Workflows</h3>
-                  <p className="mt-2 text-muted-foreground">
-                    Review queues, inspection scheduling, dispute resolution.
-                    Full auditability and RBAC.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="md:col-span-2 transition-all duration-300 hover:shadow-accent-glow">
-            <CardContent className="p-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary">
-                  <Zap className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">
-                    Fast Time-to-First-Listing
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
-                    Reuse-first approach with Supabase, Stripe, and provider-agnostic
-                    AI. Ship quickly and optimize later.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      <FeatureCardGrid features={features} />
+      <HowItWorks steps={steps} />
+      <PricingTeaser tiers={tiers} />
+      <TrustBadges logos={trustLogos} />
 
-      {/* How It Works */}
-      <section className="bg-secondary/30 py-20">
-        <div className="container px-4 md:px-6">
-          <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
-            How It Works
-          </h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground">
-                1
-              </div>
-              <h3 className="font-semibold">Create Listing</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Enter identifier, add photos, AI QA validates. Submit for ops
-                review.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground">
-                2
-              </div>
-              <h3 className="font-semibold">Auction</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Verified buyers bid in real-time. Proxy bids, anti-sniping, and
-                reserve enforcement.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground">
-                3
-              </div>
-              <h3 className="font-semibold">Settle & Ship</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Payment via Stripe, inspection scheduling, dispute resolution.
-                Full audit trail.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="container px-4 py-20 md:px-6">
-        <div className="rounded-2xl border border-[rgb(var(--border))] bg-gradient-to-r from-primary/20 to-probid-soft-yellow/20 p-12 text-center">
-          <h2 className="text-2xl font-bold md:text-3xl">
+      {/* Final CTA */}
+      <section
+        className="container px-5 py-20 md:px-6"
+        aria-labelledby="cta-heading"
+      >
+        <div className="rounded-2xl border border-[#E5E5EA] bg-gradient-to-r from-[#EFFD2D]/20 to-[#FFFACD]/20 p-12 text-center shadow-[0_2px_8px_rgba(22,22,22,0.07)]">
+          <h2 id="cta-heading" className="text-2xl font-bold text-[#181818] md:text-3xl">
             Ready to list or bid?
           </h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-4 text-[#7E7E7E]">
             Join ProBid and start trading physical assets with confidence.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" asChild>
+            <Button
+              size="lg"
+              asChild
+              className="bg-[#EFFD2D] text-[#161616] hover:bg-[#EFFD2D]/90 hover:shadow-[0_0_24px_rgba(239,253,45,0.4)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
+            >
               <Link to="/signup">Get Started</Link>
             </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/login">Log in</Link>
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="border-2 border-[#E5E5EA] hover:border-[#EFFD2D] hover:shadow-[0_0_16px_rgba(239,253,45,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            >
+              <Link to="/learn-more">Learn More</Link>
             </Button>
           </div>
         </div>
       </section>
-    </div>
+    </main>
   )
 }

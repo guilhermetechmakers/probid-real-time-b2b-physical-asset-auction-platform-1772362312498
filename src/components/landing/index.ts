@@ -1,0 +1,6 @@
+export { HeroSection } from './hero-section'
+export { FeatureCardGrid } from './feature-card-grid'
+export { HowItWorks } from './how-it-works'
+export { PricingTeaser } from './pricing-teaser'
+export { TrustBadges } from './trust-badges'
+export { FooterLinks } from './footer-links'

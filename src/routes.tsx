@@ -122,6 +122,18 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: '/learn-more',
+    element: (
+      <MainLayout>
+        <HowItWorksPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/billing',
+    element: <Navigate to="/pricing" replace />,
+  },
+  {
     path: '/pricing',
     element: (
       <MainLayout>
