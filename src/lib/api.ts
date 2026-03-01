@@ -55,6 +55,12 @@ export const api = {
   get: <T>(endpoint: string) => request<T>(endpoint, { method: 'GET' }),
   post: <T>(endpoint: string, body?: unknown) =>
     request<T>(endpoint, { method: 'POST', body: body ? JSON.stringify(body) : undefined }),
+  postWithHeaders: <T>(endpoint: string, body?: unknown, customHeaders?: Record<string, string>) =>
+    request<T>(endpoint, {
+      method: 'POST',
+      body: body ? JSON.stringify(body) : undefined,
+      headers: customHeaders,
+    }),
   put: <T>(endpoint: string, body?: unknown) =>
     request<T>(endpoint, { method: 'PUT', body: body ? JSON.stringify(body) : undefined }),
   patch: <T>(endpoint: string, body?: unknown) =>
