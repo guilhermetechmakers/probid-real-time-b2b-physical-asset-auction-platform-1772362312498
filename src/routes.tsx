@@ -15,6 +15,7 @@ import { HowItWorksPage } from '@/pages/how-it-works'
 import { SettingsPage } from '@/pages/settings'
 import { NotFoundPage } from '@/pages/not-found'
 import { ListingDetailPage } from '@/pages/listing-detail'
+import { ListingLivePage } from '@/pages/listing-live'
 import { SellerOverviewPage } from '@/pages/dashboard/seller-overview'
 import { SellerListingsPage } from '@/pages/dashboard/seller-listings'
 import { SellerAuctionsPage } from '@/pages/dashboard/seller-auctions'
@@ -119,6 +120,14 @@ export const router = createBrowserRouter([
     element: (
       <MainLayout>
         <ListingDetailPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/listing/:id/live',
+    element: (
+      <MainLayout>
+        <ListingLivePage />
       </MainLayout>
     ),
   },

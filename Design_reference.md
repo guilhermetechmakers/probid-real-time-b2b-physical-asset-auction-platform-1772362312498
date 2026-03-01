@@ -326,20 +326,19 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
-- Implement the visual style, color palette, typography, layout, and component behaviors described in Visual Style.
-- Ensure high contrast, accessible components, and keyboard navigation.
-- Use neon yellow-green accents for primary CTAs and active QA highlights; maintain a professional, data-driven aesthetic.
-- Ensure consistent spacing, grid alignment, and card elevation behavior across all panels.
-
----
+- Adhere to color palette, typography, and layout constraints described in Visual Style.
+- Cards with rounded corners, subtle shadows, and neon yellow-green accents for CTAs.
+- Persistent bottom navigation with icons; data visualizations use minimalist horizontal bars in neon yellow-green.
+- Buttons: uppercase, bold, neon yellow-green filled or outlined depending on action.
+- Ensure strong data hierarchy: current bid, time remaining, and reserve status are prominent.
 
 ## Visual Style
 
-### Color Palette
+Color Palette:
 - Primary background: #FFFFFF
 - Secondary background: #F5F6FA
-- Primary accent (CTA and QA highlights): #EFFD2D
-- Secondary accent (navigation/icons): #161616
+- Primary accent: Neon yellow-green #EFFD2D
+- Secondary accent: #161616
 - Text primary: #181818
 - Text secondary: #7E7E7E
 - Borders/dividers: #E5E5EA
@@ -347,49 +346,149 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 - Error: #FF4D4F
 - Tertiary accent: #FFFACD
 
-### Typography & Layout
-- Font family: Modern geometric sans-serif (Inter or similar)
-- Weights: 400 body, 500 secondary emphasis, 700 headlines
-- Hierarchy: Large bold numerals for key metrics, mid-size bold for section titles
-- Layout: Grid with 20–24px outer padding, 12–16px inner padding
-- Spacing: 8–16px gaps; distinct card/section separations
-- Alignment: Left-aligned data; centered nav icons
+Typography & Layout:
+- Font: Inter or equivalent
+- Weights: 400, 500, 700
+- Grid/padding: Outer 20–24px, inner 12–16px; vertical stacking
+- Spacing: 8–16px between elements
 
-### Key Design Elements
-- Card Design: 12–16px radius, soft shadow, subtle border; hover/active glow in neon yellow-green
-- Navigation: Bottom tab bar with pill-shaped background; active state uses neon yellow-green highlight
-- Data Visualization: Minimalist horizontal bars with neon yellow-green fill for active portions
-- Interactive Elements: Rounded CTAs, filled or outlined buttons with uppercase labels; clear focus states
+Key Design Elements:
+- Card with 12–16px radius; soft shadow
+- Hover state: glow with neon yellow-green
+- Data Viz: minimalist horizontal bars
+- Interactive elements: rounded buttons with neon fill or outline
 
-### Design Philosophy
-- Modern, minimalist, data-first interface with bold action accents
-- Usability-first, accessible, visually clean, and intuitive navigation
-- Clear, fast comprehension of QA results and actionable next steps
-
----
+Design Philosophy:
+- Modern, minimal, high contrast
+- Clarity and scan-ability
+- Professional yet energetic accent
 
 ## Mandatory Coding Standards — Runtime Safety
 
-CRITICAL: Apply these rules in ALL generated code to prevent runtime crashes.
+CRITICAL: All generated code must guard against null/undefined values before calling array methods.
 
 1. Supabase query results: Always use nullish coalescing — const items = data ?? [].
-2. Array methods: Never call on a value that could be null/undefined/non-array. Guard:
-   - (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : []
-3. React useState for arrays/objects: Initialize with correct type — useState<Type[]>([])
-4. API response shapes: Always validate — const list = Array.isArray(response?.data) ? response.data : []
-5. Optional chaining: Use obj?.property?.nested
-6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}
+2. Array methods: Guard calls with (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
+3. React useState for arrays/objects: Initialize arrays as useState<Type[]>([]) everywhere.
+4. API response shapes: Validate — const list = Array.isArray(response?.data) ? response.data : [].
+5. Optional chaining: Use obj?.property?.nested consistently for nested API results.
+6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
 
----
+## Data Models (Schema Details)
 
-PROJECT CONTEXT SUMMARY
-- TARGET PAGE: Edit / Manage Listing
-- Core Systems: AI Vision QA Pipeline (provider-agnostic), Intake & Enrichment Pipeline, and integration with a broader ProBid platform (Next.js, Supabase, Stripe, real-time features)
-- Connected Pages: Create Listing (Intake Wizard) and related tooling
-- Stack: Frontend Next.js + TS + Tailwind; Backend/Postgres via Supabase; Real-time and webhooks; Stripe-based payments; external enrichment/QA providers
-- Emphasis: Reuse-first architecture, pluggable AI components, robust runtime safety, and a polished, production-grade UI
+- Listing
+  - id (UUID)
+  - title (string)
+  - description (string)
+  - specs_json (JSON)
+  - vin_like_id (string)
+  - provenance (string)
+  - batch_id (UUID)
+  - auction_schedule_id (UUID)
+  - media_json (JSON)
+  - ai_qa_json (JSON)
+  - created_at, updated_at (timestamps)
 
-Generate the complete, detailed development prompt now to guide AI development tooling to build the Edit / Manage Listing feature with the above structure, ensuring all runtime safety checks and design-system guidelines are implemented.
+- Media
+  - id (UUID)
+  - listing_id (FK -> Listing)
+  - type (enum: image/video)
+  - url (string)
+  - angle_tag (string)
+  - position (int)
+
+- AiQaReport
+  - id (UUID)
+  - listing_id (FK)
+  - structured_json (JSON)
+  - confidence (float)
+  - flags_json (JSON)
+  - evidence_images_json (JSON)
+
+- AuctionBatch
+  - id (UUID)
+  - start_time (timestamp)
+  - end_time (timestamp)
+  - status (enum: scheduled/ongoing/ended)
+  - reserve (numeric)
+  - current_highest_bid (numeric)
+
+- Bid
+  - id (UUID)
+  - listing_id (FK)
+  - user_id (FK)
+  - amount (numeric)
+  - created_at (timestamp)
+  - is_proxy (boolean)
+  - proxy_max (numeric, nullable)
+  - status (enum: accepted/outbid/under-review)
+
+- Watchlist
+  - id (UUID)
+  - user_id (FK)
+  - listing_id (FK)
+  - created_at (timestamp)
+  - prefs_json (JSON)
+
+- NotificationPreference
+  - id (UUID)
+  - user_id (FK)
+  - channel (enum: email/sms/in-app)
+  - enabled (boolean)
+  - prefs_json (JSON)
+
+- User
+  - id (UUID)
+  - name, email, phone
+  - verified (boolean)
+  - deposits (numeric)
+
+- EventLog (for analytics)
+  - id
+  - listing_id
+  - event_type
+  - payload_json
+  - created_at
+
+## API Endpoints (Routes & Methods)
+
+- GET /api/listings/:id
+- GET /api/listings/:id/bids
+- POST /api/listings/:id/bids
+- POST /api/listings/:id/proxy-bids
+- POST /api/listings/:id/join-live
+- GET /api/listings/:id/ai-qa
+- GET /api/listings/:id/media
+- GET /api/search
+- POST /api/watchlist
+- GET /api/notifications/prefs
+- POST /api/notifications/prefs
+
+Security:
+- Use session-based auth, enforce RBAC, and Supabase Row-Level Security (RLS).
+- Validate all inputs server-side; sanitize all external API responses.
+
+Validation Rules:
+- Bid amounts must be >= minimum increment and <= user deposit or payment limit.
+- Proxy bid max must be >= current bid + min_increment.
+- Media uploads validated for count (15–25) and angle coverage.
+- AI QA results must be structured JSON per provider interface.
+
+## Acceptance Criteria (Expanded)
+- Robust null-safety in all data paths (see Runtime Safety section).
+- Real-time bidding and live room updates function correctly under high concurrency with no race conditions.
+- AI QA pipeline is pluggable; new providers can be swapped with minimal code changes.
+- End-to-end notifications trigger accurately and are deduplicated via idempotent webhooks.
+- Caching strategies deliver sub-second UI for listing detail and near-zero backend latency.
+
+## Additional Guidelines
+
+- Use a modular architecture with clear contracts between frontend components, API adapters, and backend services.
+- Emphasize testability: unit tests for data adapters, integration tests for bidding logic, and end-to-end tests for Live Auction Room flows.
+- Document decisions for AI QA provider boundaries, enrichment caching, and edge caching strategies.
+- Ensure the codebase enforces null-safety patterns by default and provides guard rails for all array-like data manipulations.
+
+If you need, I can tailor this prompt further to match your tooling (e.g., specific AI coding tool, LLM prompt style, or a test plan scaffold).
 
 ## Implementation Notes
 
