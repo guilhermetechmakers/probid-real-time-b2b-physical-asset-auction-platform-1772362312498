@@ -92,3 +92,78 @@ export interface ResendVerificationResponse {
   success: boolean
   message?: string
 }
+
+/* Seller Dashboard Types */
+export type ListingStatusBadge =
+  | 'draft'
+  | 'pending_review'
+  | 'approved'
+  | 'in_auction'
+  | 'sold'
+
+export interface ListingPhoto {
+  id: string
+  listingId: string
+  url: string
+  order: number
+  width?: number
+  height?: number
+  storedAt?: string
+}
+
+export interface EnrichmentResult {
+  provider: string
+  dataJson: Record<string, unknown>
+  confidence: number
+  hardFail: boolean
+  warnings: string[]
+}
+
+export interface Intake {
+  id: string
+  listingId: string
+  currentStep: number
+  status: 'draft' | 'in_progress' | 'completed'
+  resultsJson?: Record<string, unknown>
+  enrichedAt?: string
+}
+
+export type InspectionStatus = 'scheduled' | 'in_progress' | 'completed'
+
+export interface Inspection {
+  id: string
+  listingId: string
+  scheduledAt: string
+  inspectorId?: string
+  inspectorName?: string
+  status: InspectionStatus
+  notes?: string
+}
+
+export interface Sale {
+  id: string
+  listingId: string
+  listingTitle?: string
+  salePrice: number
+  soldAt: string
+  buyerId?: string
+}
+
+export interface Notification {
+  id: string
+  sellerId: string
+  type: string
+  message: string
+  read: boolean
+  createdAt: string
+  actionUrl?: string
+}
+
+export interface ActivityEvent {
+  id: string
+  type: 'inspection_scheduled' | 'bid_received' | 'win' | 'listing_approved' | 'listing_rejected'
+  message: string
+  timestamp: string
+  actor?: string
+  targetId?: string
+}

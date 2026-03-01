@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { SellerGuard } from '@/components/guards/seller-guard'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
@@ -15,8 +16,14 @@ import { SettingsPage } from '@/pages/settings'
 import { NotFoundPage } from '@/pages/not-found'
 import { ListingDetailPage } from '@/pages/listing-detail'
 import { SellerOverviewPage } from '@/pages/dashboard/seller-overview'
+import { SellerListingsPage } from '@/pages/dashboard/seller-listings'
+import { SellerAuctionsPage } from '@/pages/dashboard/seller-auctions'
+import { SellerInspectionsPage } from '@/pages/dashboard/seller-inspections'
+import { SellerSalesPage } from '@/pages/dashboard/seller-sales'
 import { BuyerOverviewPage } from '@/pages/dashboard/buyer-overview'
 import { SellerCreateListingPage } from '@/pages/dashboard/seller-create-listing'
+import { SellerNotificationsPage } from '@/pages/dashboard/seller-notifications'
+import { SellerSupportPage } from '@/pages/dashboard/seller-support'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -137,14 +144,20 @@ export const router = createBrowserRouter([
     path: '/dashboard/seller',
     element: (
       <MainLayout>
-        <DashboardLayout />
+        <SellerGuard>
+          <DashboardLayout />
+        </SellerGuard>
       </MainLayout>
     ),
     children: [
       { index: true, element: <SellerOverviewPage /> },
       { path: 'create', element: <SellerCreateListingPage /> },
-      { path: 'listings', element: <SellerOverviewPage /> },
-      { path: 'auctions', element: <SellerOverviewPage /> },
+      { path: 'listings', element: <SellerListingsPage /> },
+      { path: 'auctions', element: <SellerAuctionsPage /> },
+      { path: 'inspections', element: <SellerInspectionsPage /> },
+      { path: 'sales', element: <SellerSalesPage /> },
+      { path: 'notifications', element: <SellerNotificationsPage /> },
+      { path: 'support', element: <SellerSupportPage /> },
     ],
   },
   {
