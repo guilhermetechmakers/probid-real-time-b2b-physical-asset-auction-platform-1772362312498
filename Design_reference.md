@@ -326,61 +326,42 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
-- Maintain a modern, minimal, high-contrast aesthetic.
-- Emphasize clarity and scan-ability with strong typographic hierarchy.
-- Use neon yellow-green for primary actions and data highlights; dark charcoal for navigation/icons; subtle borders and soft shadows for components.
-- Ensure accessibility: keyboard navigation, focus states, adequate color contrast, ARIA labeling for dynamic components.
-- Interaction patterns: rounded buttons, hover/active elevation, subtle micro-interactions for state changes.
+- Follow the color palette, typography, layout, and spacing described.
+- Card design with rounded corners, soft shadows, and neon yellow-green accents for CTAs.
+- Persistent bottom navigation with accessible icons; ensure active states use neon yellow-green fills.
+- Data visualization: slim horizontal bars in neon yellow-green for active data, light gray for inactive.
+- Inputs and controls: borderless or soft-background inputs with clear focus styles; actions are bold and uppercase for CTAs.
 
----
+Visual Style
+- Color Palette as specified: white, pale gray backgrounds, neon yellow-green accents, dark charcoal for nav, black text, gray secondary text, light borders, green success, red errors, soft yellow for notifications.
+- Typography: Inter-like sans-serif, weights 400/500/700, clear hierarchy for titles, section headers, and content.
+- Layout: grid-based, generous padding (outer 20-24px, inner 12-16px); consistent vertical stacking; left-aligned content; centered nav icons.
+- Cards: 12–16px radius, subtle dropshadow rgba(22,22,22,0.07).
+- Interactions: hover/active glow, micro-interactions for actions, smooth transitions.
 
-## Visual Style
+Mandatory Coding Standards — Runtime Safety
+CRITICAL: All generated code MUST guard against null/undefined values before calling array methods.
+1) Supabase query results: Always use const items = data ?? [].
+2) Array methods: Guard: (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
+3) React useState for arrays: useState<Type[]>([]).
+4) API response shapes: const list = Array.isArray(response?.data) ? response.data : [].
+5) Optional chaining: Use obj?.property?.nested for nested API/db access.
+6) Destructuring with defaults: const { items = [], count = 0 } = response ?? {};
 
-### Color Palette
-- Primary background: #FFFFFF
-- Secondary background: #F5F6FA
-- Primary accent: #EFFD2D
-- Secondary accent: #161616
-- Text primary: #181818
-- Text secondary: #7E7E7E
-- Borders/dividers: #E5E5EA
-- Success: #2ED573
-- Error: #FF4D4F
-- Tertiary accent: #FFFACD
+Project Context Alignment
+- Target: Order / Transaction History page that supports Buyer and Seller views, displaying invoices, settlement, disputes, and logistics.
+- Connected: Dispute & Refund Workflow with audit trails and finance adjustments.
+- Tech stack: Next.js + TypeScript, Supabase, Tailwind CSS; real-time via Supabase Realtime; Stripe for payments; Vercel hosting.
+- UI/UX Philosophy: Modern, minimalist, high contrast; strong visual hierarchy; accessible and frictionless interactions.
 
-### Typography & Layout
-- Font family: Inter or similar geometric sans-serif
-- Weights: 400 body, 500 secondary, 700 headlines
-- Hierarchy: Large bold numbers for totals, mid-size bold section titles, smaller regular details
-- Layout: Grid with 20–24px outer padding, 12–16px internal; vertical stacking; 8–16px gaps
-- Alignment: Left data; centered icons for nav; clear grouping
+Provide the complete, detailed prompt for AI development tool
+- Include all sections above with explicit field examples, data structures, API contracts, and UI component contracts.
+- Include explicit guardrails and runtime safety statements to ensure generated code adheres to the runtime safety rules.
+- Include sample data shapes for Transactions, Invoices, Disputes, Logistics, and Audit trails to guide scaffolding.
+- Include test cases (unit and integration) that validate null safety, role-based access, dispute lifecycle, and CSV export. 
+- Include a code skeleton outline (files and folders) to help scaffold the project.
 
-### Key Design Elements
-- Card Design: 12–16px radius, subtle shadow rgba(22,22,22,0.07); hover/active glow with neon accent
-- Navigation: Bottom fixed tab bar, pill-shaped, dark charcoal, active neon yellow-green icon
-- Data Visualization: Minimalist horizontal bars, neon fill for active, light gray for inactive
-- Interactive Elements: Rounded CTAs, neon-filled primary buttons, borderless inputs with focus underline or glow
-
-### Design Philosophy
-- Modern, minimal, high-contrast with bold accents
-- Clarity, actionable data presentation, and tactile interactivity
-- Accessible, usable, and scalable across devices
-
----
-
-## Mandatory Coding Standards — Runtime Safety
-
-CRITICAL: All generated code must guard against null/undefined values before calling array methods and guard API results as described:
-1) Supabase query results: Always use const items = data ?? []
-2) Array methods: Never call on possibly null/undefined; use (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : []
-3) React useState for arrays/objects: Initialize with correct type e.g., useState<Invoice[]>([])
-4) API response shapes: const list = Array.isArray(response?.data) ? response.data : []
-5) Optional chaining: Use obj?.property?.nested
-6) Destructuring with defaults: const { items = [], count = 0 } = response ?? {}
-
----
-
-This prompt provides a complete, actionable blueprint for building the Checkout / Payment experience with Stripe integration, post-auction flows, and robust webhook handling, while enforcing runtime safety and design guidelines consistent with the project. If you’d like, I can tailor the prompt to a specific tech stack version, add sample data schemas, or provide a starter code scaffold (folders, TS interfaces, and API route templates) that adheres to these requirements.
+This prompt should now be ready for an AI development tool to generate a complete, ready-to-build Order / Transaction History feature with the Dispute & Refund Workflow integration, compliant with the specified runtime safety constraints.
 
 ## Implementation Notes
 

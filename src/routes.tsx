@@ -28,6 +28,7 @@ import { SellerEditListingPage } from '@/pages/dashboard/seller-edit-listing'
 import { SellerNotificationsPage } from '@/pages/dashboard/seller-notifications'
 import { SellerSupportPage } from '@/pages/dashboard/seller-support'
 import { CheckoutPage } from '@/pages/checkout'
+import { TransactionHistoryPage } from '@/pages/dashboard/transaction-history'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -181,6 +182,7 @@ export const router = createBrowserRouter([
       { path: 'auctions', element: <SellerAuctionsPage /> },
       { path: 'inspections', element: <SellerInspectionsPage /> },
       { path: 'sales', element: <SellerSalesPage /> },
+      { path: 'orders', element: <TransactionHistoryPage /> },
       { path: 'notifications', element: <SellerNotificationsPage /> },
       { path: 'support', element: <SellerSupportPage /> },
     ],
@@ -198,6 +200,7 @@ export const router = createBrowserRouter([
       { index: true, element: <BuyerDashboardPage /> },
       { path: 'auctions', element: <BuyerDashboardPage /> },
       { path: 'watchlist', element: <BuyerDashboardPage /> },
+      { path: 'orders', element: <TransactionHistoryPage /> },
     ],
   },
   {

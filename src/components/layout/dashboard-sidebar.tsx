@@ -14,6 +14,7 @@ import {
   TrendingUp,
   HelpCircle,
   Menu,
+  ShoppingBag,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -31,12 +32,14 @@ const sellerNavItems: NavItem[] = [
   { href: '/dashboard/seller/auctions', label: 'Auctions', icon: Gavel },
   { href: '/dashboard/seller/inspections', label: 'Inspections', icon: ClipboardCheck },
   { href: '/dashboard/seller/sales', label: 'Sales', icon: TrendingUp },
+  { href: '/dashboard/seller/orders', label: 'Orders', icon: ShoppingBag },
 ]
 
 const buyerNavItems: NavItem[] = [
   { href: '/dashboard/buyer', label: 'Overview', icon: LayoutDashboard },
   { href: '/dashboard/buyer/auctions', label: 'Auctions', icon: Calendar },
   { href: '/dashboard/buyer/watchlist', label: 'Watchlist', icon: Heart },
+  { href: '/dashboard/buyer/orders', label: 'Orders', icon: ShoppingBag },
 ]
 
 const SIDEBAR_COLLAPSED_KEY = 'probid-seller-sidebar-collapsed'
