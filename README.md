@@ -1,73 +1,96 @@
-# React + TypeScript + Vite
+# ProBid - Real-Time B2B Physical Asset Auction Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Enterprise-grade auction platform for physical assets with intelligent intake, AI Vision QA, real-time bidding, and ops-first workflows.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 18** + TypeScript
+- **Vite** + React Router 6
+- **Tailwind CSS v3** with design system
+- **Shadcn/ui** (Radix UI primitives)
+- **TanStack React Query**
+- **React Hook Form** + Zod
+- **Supabase** (Auth, Database, Storage, Realtime)
+- **Sonner** for toasts
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18+
+- npm
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Installation
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Copy `.env.example` to `.env` and configure:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+- `VITE_SUPABASE_URL` - Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Your Supabase anon key
+
+### Development
+
+```bash
+npm run dev
+```
+
+### Build
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Project Structure
+
+```
+src/
+├── components/     # UI components
+│   ├── layout/     # Header, Footer, Sidebar
+│   └── ui/         # Shadcn-style primitives
+├── contexts/       # React contexts (Auth)
+├── lib/            # Utilities, Supabase, API
+├── pages/          # Route pages
+├── types/          # TypeScript types
+└── routes.tsx      # React Router config
+```
+
+## Key Pages
+
+- **Landing** - Hero, feature grid, how it works, CTA
+- **Login / Signup** - Auth with role selection (Seller/Buyer)
+- **Forgot Password** - Password reset flow
+- **Marketplace** - Listing browse with search
+- **Seller Dashboard** - Listings, create wizard, metrics
+- **Buyer Dashboard** - Auctions, watchlist, subscription
+- **Create Listing** - Multi-step intake wizard
+- **Settings** - Profile, subscription
+
+## Design System
+
+ProBid uses a crisp, high-contrast palette:
+
+- **Primary accent:** Neon yellow-green (#EFFD2D)
+- **Secondary accent:** Dark charcoal (#161616)
+- **Background:** White / Light gray (#F5F6FA)
+- **Borders:** Light gray (#E5E5EA)
+
+Typography: Inter, 400/500/700 weights. Cards: 12–16px radius, soft shadow, hover elevation.
+
+## License
+
+Proprietary - ProBid

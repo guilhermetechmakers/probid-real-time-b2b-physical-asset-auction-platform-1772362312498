@@ -1,68 +1,87 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* ProBid design system - light mode */
+    --background: 255 255 255;
+    --foreground: 24 24 24;
+    --card: 255 255 255;
+    --card-foreground: 24 24 24;
+    --primary: 239 253 45;
+    --primary-foreground: 22 22 22;
+    --secondary: 245 246 250;
+    --secondary-foreground: 24 24 24;
+    --accent: 239 253 45;
+    --accent-foreground: 22 22 22;
+    --muted: 245 246 250;
+    --muted-foreground: 126 126 126;
+    --border: 229 229 234;
+    --input: 229 229 234;
+    --ring: 239 253 45;
+    --destructive: 255 77 79;
+    --success: 46 213 115;
   }
-  a:hover {
-    color: #747bff;
+
+  .dark {
+    --background: 22 22 22;
+    --foreground: 255 255 255;
+    --card: 30 30 30;
+    --card-foreground: 255 255 255;
+    --primary: 239 253 45;
+    --primary-foreground: 22 22 22;
+    --secondary: 40 40 40;
+    --secondary-foreground: 255 255 255;
+    --accent: 239 253 45;
+    --accent-foreground: 22 22 22;
+    --muted: 40 40 40;
+    --muted-foreground: 160 160 160;
+    --border: 60 60 60;
+    --input: 60 60 60;
+    --ring: 239 253 45;
+    --destructive: 255 77 79;
+    --success: 46 213 115;
   }
-  button {
-    background-color: #f9f9f9;
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    margin: 0;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+
+  .animate-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
   }
 }
