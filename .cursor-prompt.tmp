@@ -1,0 +1,1360 @@
+⚠️ CRITICAL EXECUTION RULES - READ FIRST ⚠️
+❌ NEVER run: npm run dev, npm start, yarn dev, pnpm dev, or ANY development server
+❌ NEVER run: long-running processes, servers, or commands that don't exit
+❌ NEVER test the application by starting it
+✅ ALLOWED: npm install, npm run build, npm run test (if needed)
+✅ YOUR TASK: Create/modify files only, then STOP and EXIT immediately
+⚠️ The MCP server handles all testing and validation separately
+
+You are an expert full-stack developer proficient in TypeScript, React, Next.js, and modern UI/UX frameworks (Tailwind CSS, Shadcn UI, Radix UI).
+
+=== DESIGN REFERENCE (MANDATORY) ===
+# Modern Design Best Practices
+
+## Philosophy
+
+Create unique, memorable experiences while maintaining consistency through modern design principles. Every project should feel distinct yet professional, innovative yet intuitive.
+
+---
+
+## Landing Pages & Marketing Sites
+
+### Hero Sections
+**Go beyond static backgrounds:**
+- Animated gradients with subtle movement
+- Particle systems or geometric shapes floating
+- Interactive canvas backgrounds (Three.js, WebGL)
+- Video backgrounds with proper fallbacks
+- Parallax scrolling effects
+- Gradient mesh animations
+- Morphing blob animations
+
+
+### Layout Patterns
+**Use modern grid systems:**
+- Bento grids (asymmetric card layouts)
+- Masonry layouts for varied content
+- Feature sections with diagonal cuts or curves
+- Overlapping elements with proper z-index
+- Split-screen designs with scroll-triggered reveals
+
+**Avoid:** Traditional 3-column equal grids
+
+### Scroll Animations
+**Engage users as they scroll:**
+- Fade-in and slide-up animations for sections
+- Scroll-triggered parallax effects
+- Progress indicators for long pages
+- Sticky elements that transform on scroll
+- Horizontal scroll sections for portfolios
+- Text reveal animations (word by word, letter by letter)
+- Number counters animating into view
+
+**Avoid:** Static pages with no scroll interaction
+
+### Call-to-Action Areas
+**Make CTAs impossible to miss:**
+- Gradient buttons with hover effects
+- Floating action buttons with micro-interactions
+- Animated borders or glowing effects
+- Scale/lift on hover
+- Interactive elements that respond to mouse position
+- Pulsing indicators for primary actions
+
+---
+
+## Dashboard Applications
+
+### Layout Structure
+**Always use collapsible side navigation:**
+- Sidebar that can collapse to icons only
+- Smooth transition animations between states
+- Persistent navigation state (remember user preference)
+- Mobile: drawer that slides in/out
+- Desktop: sidebar with expand/collapse toggle
+- Icons visible even when collapsed
+
+**Structure:**
+```
+/dashboard (layout wrapper with sidebar)
+  /dashboard/overview
+  /dashboard/analytics
+  /dashboard/settings
+  /dashboard/users
+  /dashboard/projects
+```
+
+All dashboard pages should be nested inside the dashboard layout, not separate routes.
+
+### Data Tables
+**Modern table design:**
+- Sticky headers on scroll
+- Row hover states with subtle elevation
+- Sortable columns with clear indicators
+- Pagination with items-per-page control
+- Search/filter with instant feedback
+- Selection checkboxes with bulk actions
+- Responsive: cards on mobile, table on desktop
+- Loading skeletons, not spinners
+- Empty states with illustrations or helpful text
+
+**Use modern table libraries:**
+- TanStack Table (React Table v8)
+- AG Grid for complex data
+- Data Grid from MUI (if using MUI)
+
+### Charts & Visualizations
+**Use the latest charting libraries:**
+- Recharts (for React, simple charts)
+- Chart.js v4 (versatile, well-maintained)
+- Apache ECharts (advanced, interactive)
+- D3.js (custom, complex visualizations)
+- Tremor (for dashboards, built on Recharts)
+
+**Chart best practices:**
+- Animated transitions when data changes
+- Interactive tooltips with detailed info
+- Responsive sizing
+- Color scheme matching design system
+- Legend placement that doesn't obstruct data
+- Loading states while fetching data
+
+### Dashboard Cards
+**Metric cards should stand out:**
+- Gradient backgrounds or colored accents
+- Trend indicators (↑ ↓ with color coding)
+- Sparkline charts for historical data
+- Hover effects revealing more detail
+- Icon representing the metric
+- Comparison to previous period
+
+---
+
+## Color & Visual Design
+
+### Color Palettes
+**Create depth with gradients:**
+- Primary gradient (not just solid primary color)
+- Subtle background gradients
+- Gradient text for headings
+- Gradient borders on cards
+- Elevated surfaces for depth
+
+**Color usage:**
+- 60-30-10 rule (dominant, secondary, accent)
+- Consistent semantic colors (success, warning, error)
+- Accessible contrast ratios (WCAG AA minimum)
+
+### Typography
+**Create hierarchy through contrast:**
+- Large, bold headings (48-72px for heroes)
+- Clear size differences between levels
+- Variable font weights (300, 400, 600, 700)
+- Letter spacing for small caps
+- Line height 1.5-1.7 for body text
+- Inter, Poppins, or DM Sans for modern feel
+
+### Shadows & Depth
+**Layer UI elements:**
+- Multi-layer shadows for realistic depth
+- Colored shadows matching element color
+- Elevated states on hover
+- Neumorphism for special elements (sparingly)
+
+---
+
+## Interactions & Micro-animations
+
+### Button Interactions
+**Every button should react:**
+- Scale slightly on hover (1.02-1.05)
+- Lift with shadow on hover
+- Ripple effect on click
+- Loading state with spinner or progress
+- Disabled state clearly visible
+- Success state with checkmark animation
+
+### Card Interactions
+**Make cards feel alive:**
+- Lift on hover with increased shadow
+- Subtle border glow on hover
+- Tilt effect following mouse (3D transform)
+- Smooth transitions (200-300ms)
+- Click feedback for interactive cards
+
+### Form Interactions
+**Guide users through forms:**
+- Input focus states with border color change
+- Floating labels that animate up
+- Real-time validation with inline messages
+- Success checkmarks for valid inputs
+- Error states with shake animation
+- Password strength indicators
+- Character count for text areas
+
+### Page Transitions
+**Smooth between views:**
+- Fade + slide for page changes
+- Skeleton loaders during data fetch
+- Optimistic UI updates
+- Stagger animations for lists
+- Route transition animations
+
+---
+
+## Mobile Responsiveness
+
+### Mobile-First Approach
+**Design for mobile, enhance for desktop:**
+- Touch targets minimum 44x44px
+- Generous padding and spacing
+- Sticky bottom navigation on mobile
+- Collapsible sections for long content
+- Swipeable cards and galleries
+- Pull-to-refresh where appropriate
+
+### Responsive Patterns
+**Adapt layouts intelligently:**
+- Hamburger menu → full nav bar
+- Card grid → stack on mobile
+- Sidebar → drawer
+- Multi-column → single column
+- Data tables → card list
+- Hide/show elements based on viewport
+
+---
+
+## Loading & Empty States
+
+### Loading States
+**Never leave users wondering:**
+- Skeleton screens matching content layout
+- Progress bars for known durations
+- Animated placeholders
+- Spinners only for short waits (<3s)
+- Stagger loading for multiple elements
+- Shimmer effects on skeletons
+
+### Empty States
+**Make empty states helpful:**
+- Illustrations or icons
+- Helpful copy explaining why it's empty
+- Clear CTA to add first item
+- Examples or suggestions
+- No "no data" text alone
+
+---
+
+## Unique Elements to Stand Out
+
+### Distinctive Features
+**Add personality:**
+- Custom cursor effects on landing pages
+- Animated page numbers or section indicators
+- Unusual hover effects (magnification, distortion)
+- Custom scrollbars
+- Glassmorphism for overlays
+- Animated SVG icons
+- Typewriter effects for hero text
+- Confetti or celebration animations for actions
+
+### Interactive Elements
+**Engage users:**
+- Drag-and-drop interfaces
+- Sliders and range controls
+- Toggle switches with animations
+- Progress steps with animations
+- Expandable/collapsible sections
+- Tabs with slide indicators
+- Image comparison sliders
+- Interactive demos or playgrounds
+
+---
+
+## Consistency Rules
+
+### Maintain Consistency
+**What should stay consistent:**
+- Spacing scale (4px, 8px, 16px, 24px, 32px, 48px, 64px)
+- Border radius values
+- Animation timing (200ms, 300ms, 500ms)
+- Color system (primary, secondary, accent, neutrals)
+- Typography scale
+- Icon style (outline vs filled)
+- Button styles across the app
+- Form element styles
+
+### What Can Vary
+**Project-specific customization:**
+- Color palette (different colors, same system)
+- Layout creativity (grids, asymmetry)
+- Illustration style
+- Animation personality
+- Feature-specific interactions
+- Hero section design
+- Card styling variations
+- Background patterns or textures
+
+---
+
+## Technical Excellence
+
+### Performance
+- Optimize images (WebP, lazy loading)
+- Code splitting for faster loads
+- Debounce search inputs
+- Virtualize long lists
+- Minimize re-renders
+- Use proper memoization
+
+### Accessibility
+- Keyboard navigation throughout
+- ARIA labels where needed
+- Focus indicators visible
+- Screen reader friendly
+- Sufficient color contrast
+- Respect reduced motion preferences
+
+---
+
+## Key Principles
+
+1. **Be Bold** - Don't be afraid to try unique layouts and interactions
+2. **Be Consistent** - Use the same patterns for similar functions
+3. **Be Responsive** - Design works beautifully on all devices
+4. **Be Fast** - Animations are smooth, loading is quick
+5. **Be Accessible** - Everyone can use what you build
+6. **Be Modern** - Use current design trends and technologies
+7. **Be Unique** - Each project should have its own personality
+8. **Be Intuitive** - Users shouldn't need instructions
+
+
+*IMPORTANT*: For every page or component refer to # Modern Design Best Practices
+
+## Philosophy
+
+Create unique, memorable experiences while maintaining consistency through modern design principles. Every project should feel distinct yet professional, innovative yet intuitive.
+
+---
+
+## Landing Pages & Marketing Sites
+
+### Hero Sections
+**Go beyond static backgrounds:**
+- Animated gradients with subtle movement
+- Particle systems or geometric shapes floating
+- Interactive canvas backgrounds (Three.js, WebGL)
+- Video backgrounds with proper fallbacks
+- Parallax scrolling effects
+- Gradient mesh animations
+- Morphing blob animations
+
+
+### Layout Patterns
+**Use modern grid systems:**
+- Bento grids (asymmetric card layouts)
+- Masonry layouts for varied content
+- Feature sections with diagonal cuts or curves
+- Overlapping elements with proper z-index
+- Split-screen designs with scroll-triggered reveals
+
+**Avoid:** Traditional 3-column equal grids
+
+### Scroll Animations
+**Engage users as they scroll:**
+- Fade-in and slide-up animations for sections
+- Scroll-triggered parallax effects
+- Progress indicators for long pages
+- Sticky elements that transform on scroll
+- Horizontal scroll sections for portfolios
+- Text reveal animations (word by word, letter by letter)
+- Number counters animating into view
+
+**Avoid:** Static pages with no scroll interaction
+
+### Call-to-Action Areas
+**Make CTAs impossible to miss:**
+- Gradient buttons with hover effects
+- Floating action buttons with micro-interactions
+- Animated borders or glowing effects
+- Scale/lift on hover
+- Interactive elements that respond to mouse position
+- Pulsing indicators for primary actions
+
+---
+
+## Dashboard Applications
+
+### Layout Structure
+**Always use collapsible side navigation:**
+- Sidebar that can collapse to icons only
+- Smooth transition animations between states
+- Persistent navigation state (remember user preference)
+- Mobile: drawer that slides in/out
+- Desktop: sidebar with expand/collapse toggle
+- Icons visible even when collapsed
+
+**Structure:**
+```
+/dashboard (layout wrapper with sidebar)
+  /dashboard/overview
+  /dashboard/analytics
+  /dashboard/settings
+  /dashboard/users
+  /dashboard/projects
+```
+
+All dashboard pages should be nested inside the dashboard layout, not separate routes.
+
+### Data Tables
+**Modern table design:**
+- Sticky headers on scroll
+- Row hover states with subtle elevation
+- Sortable columns with clear indicators
+- Pagination with items-per-page control
+- Search/filter with instant feedback
+- Selection checkboxes with bulk actions
+- Responsive: cards on mobile, table on desktop
+- Loading skeletons, not spinners
+- Empty states with illustrations or helpful text
+
+**Use modern table libraries:**
+- TanStack Table (React Table v8)
+- AG Grid for complex data
+- Data Grid from MUI (if using MUI)
+
+### Charts & Visualizations
+**Use the latest charting libraries:**
+- Recharts (for React, simple charts)
+- Chart.js v4 (versatile, well-maintained)
+- Apache ECharts (advanced, interactive)
+- D3.js (custom, complex visualizations)
+- Tremor (for dashboards, built on Recharts)
+
+**Chart best practices:**
+- Animated transitions when data changes
+- Interactive tooltips with detailed info
+- Responsive sizing
+- Color scheme matching design system
+- Legend placement that doesn't obstruct data
+- Loading states while fetching data
+
+### Dashboard Cards
+**Metric cards should stand out:**
+- Gradient backgrounds or colored accents
+- Trend indicators (↑ ↓ with color coding)
+- Sparkline charts for historical data
+- Hover effects revealing more detail
+- Icon representing the metric
+- Comparison to previous period
+
+---
+
+## Color & Visual Design
+
+### Color Palettes
+**Create depth with gradients:**
+- Primary gradient (not just solid primary color)
+- Subtle background gradients
+- Gradient text for headings
+- Gradient borders on cards
+- Elevated surfaces for depth
+
+**Color usage:**
+- 60-30-10 rule (dominant, secondary, accent)
+- Consistent semantic colors (success, warning, error)
+- Accessible contrast ratios (WCAG AA minimum)
+
+### Typography
+**Create hierarchy through contrast:**
+- Large, bold headings (48-72px for heroes)
+- Clear size differences between levels
+- Variable font weights (300, 400, 600, 700)
+- Letter spacing for small caps
+- Line height 1.5-1.7 for body text
+- Inter, Poppins, or DM Sans for modern feel
+
+### Shadows & Depth
+**Layer UI elements:**
+- Multi-layer shadows for realistic depth
+- Colored shadows matching element color
+- Elevated states on hover
+- Neumorphism for special elements (sparingly)
+
+---
+
+## Interactions & Micro-animations
+
+### Button Interactions
+**Every button should react:**
+- Scale slightly on hover (1.02-1.05)
+- Lift with shadow on hover
+- Ripple effect on click
+- Loading state with spinner or progress
+- Disabled state clearly visible
+- Success state with checkmark animation
+
+### Card Interactions
+**Make cards feel alive:**
+- Lift on hover with increased shadow
+- Subtle border glow on hover
+- Tilt effect following mouse (3D transform)
+- Smooth transitions (200-300ms)
+- Click feedback for interactive cards
+
+### Form Interactions
+**Guide users through forms:**
+- Input focus states with border color change
+- Floating labels that animate up
+- Real-time validation with inline messages
+- Success checkmarks for valid inputs
+- Error states with shake animation
+- Password strength indicators
+- Character count for text areas
+
+### Page Transitions
+**Smooth between views:**
+- Fade + slide for page changes
+- Skeleton loaders during data fetch
+- Optimistic UI updates
+- Stagger animations for lists
+- Route transition animations
+
+---
+
+## Mobile Responsiveness
+
+### Mobile-First Approach
+**Design for mobile, enhance for desktop:**
+- Touch targets minimum 44x44px
+- Generous padding and spacing
+- Sticky bottom navigation on mobile
+- Collapsible sections for long content
+- Swipeable cards and galleries
+- Pull-to-refresh where appropriate
+
+### Responsive Patterns
+**Adapt layouts intelligently:**
+- Hamburger menu → full nav bar
+- Card grid → stack on mobile
+- Sidebar → drawer
+- Multi-column → single column
+- Data tables → card list
+- Hide/show elements based on viewport
+
+---
+
+## Loading & Empty States
+
+### Loading States
+**Never leave users wondering:**
+- Skeleton screens matching content layout
+- Progress bars for known durations
+- Animated placeholders
+- Spinners only for short waits (<3s)
+- Stagger loading for multiple elements
+- Shimmer effects on skeletons
+
+### Empty States
+**Make empty states helpful:**
+- Illustrations or icons
+- Helpful copy explaining why it's empty
+- Clear CTA to add first item
+- Examples or suggestions
+- No "no data" text alone
+
+---
+
+## Unique Elements to Stand Out
+
+### Distinctive Features
+**Add personality:**
+- Custom cursor effects on landing pages
+- Animated page numbers or section indicators
+- Unusual hover effects (magnification, distortion)
+- Custom scrollbars
+- Glassmorphism for overlays
+- Animated SVG icons
+- Typewriter effects for hero text
+- Confetti or celebration animations for actions
+
+### Interactive Elements
+**Engage users:**
+- Drag-and-drop interfaces
+- Sliders and range controls
+- Toggle switches with animations
+- Progress steps with animations
+- Expandable/collapsible sections
+- Tabs with slide indicators
+- Image comparison sliders
+- Interactive demos or playgrounds
+
+---
+
+## Consistency Rules
+
+### Maintain Consistency
+**What should stay consistent:**
+- Spacing scale (4px, 8px, 16px, 24px, 32px, 48px, 64px)
+- Border radius values
+- Animation timing (200ms, 300ms, 500ms)
+- Color system (primary, secondary, accent, neutrals)
+- Typography scale
+- Icon style (outline vs filled)
+- Button styles across the app
+- Form element styles
+
+### What Can Vary
+**Project-specific customization:**
+- Color palette (different colors, same system)
+- Layout creativity (grids, asymmetry)
+- Illustration style
+- Animation personality
+- Feature-specific interactions
+- Hero section design
+- Card styling variations
+- Background patterns or textures
+
+---
+
+## Technical Excellence
+
+### Performance
+- Optimize images (WebP, lazy loading)
+- Code splitting for faster loads
+- Debounce search inputs
+- Virtualize long lists
+- Minimize re-renders
+- Use proper memoization
+
+### Accessibility
+- Keyboard navigation throughout
+- ARIA labels where needed
+- Focus indicators visible
+- Screen reader friendly
+- Sufficient color contrast
+- Respect reduced motion preferences
+
+---
+
+## Key Principles
+
+1. **Be Bold** - Don't be afraid to try unique layouts and interactions
+2. **Be Consistent** - Use the same patterns for similar functions
+3. **Be Responsive** - Design works beautifully on all devices
+4. **Be Fast** - Animations are smooth, loading is quick
+5. **Be Accessible** - Everyone can use what you build
+6. **Be Modern** - Use current design trends and technologies
+7. **Be Unique** - Each project should have its own personality
+8. **Be Intuitive** - Users shouldn't need instructions
+ for bestpractices and # Buyer Dashboard
+
+## Overview
+Create a role-specific Buyer Dashboard for verified buyers that surfaces available auctions, watchlist, bidding history, subscription status, and saved filters. The page must enforce subscription gating and a KYC/verification workflow with admin approval. It should be built with a reuse-first approach leveraging the project's preferred stack (Next.js, TypeScript, Tailwind CSS on the frontend; Supabase with Postgres, RLS, Realtime on the backend; Stripe for payments; Vercel hosting). All code must be resilient to null/undefined values and guarded against common runtime pitfalls as described in the mandatory coding standards.
+
+## Page Description (Full Detail)
+What this page is:
+- A role-specific, gated Buyer Dashboard for verified buyers that combines multiple subviews into a single, cohesive dashboard: 
+  - Available Auctions (upcoming and current batches with real-time bid activity indicators)
+  - Watchlist and Saved Searches (with alerts/notification settings)
+  - Bidding History (recent bids, outcomes, and outbid notifications)
+  - Subscription Status (current plan, renewal date, upgrade/renew options)
+  - Saved Filters (category, location, condition, price range) with quick-load presets
+  - KYC/Verification status indicator (with admin approval workflow status and call-to-action for pending items)
+
+Goals:
+- Gate access behind an active Stripe-based subscription and a verified KYC status with admin approval. If not authorized, present a guided onboarding/verification flow and appropriate upgrade prompts.
+- Provide fast, responsive UX with clear data visualization shows (e.g., horizontal bar charts for activity, status pills for subscription, compact auction cards).
+- Ensure data integrity and real-time responsiveness with Supabase Realtime for live bidding, and safe data handling on the client (null checks, array guards).
+
+Connected features:
+- Buyer Subscription & Verification: Access restricted by subscription plan and KYC/admin approval workflow. Admins review verification submissions and trigger status changes.
+- Auction engine and live bidding data (read-only in this dashboard) feed from the real-time auction core.
+- Saved filters and watchlists stored per-buyer in Supabase, with options to export or share saved searches (future feature).
+
+UI elements and guidance:
+- Auction Calendar / Upcoming Batches: list of scheduled auctions with date/time, location, asset summary, current bid, and a CTA to join or view details.
+- Watchlist / Saved Searches: quick access cards, with alert toggles (email/SMS/push) and status indicators.
+- Bid Activity: timeline-style or compact list with bid amount, time, status (won/lost/outbid), and action to view asset.
+- Subscription Status Card: plan name, renewal date, remaining days, upgrade/cancel actions, and a lightweight credit/balance indicator if applicable.
+- Filters/Quick Search: multi-select fields for category, location, condition, price range sliders, and saved presets.
+
+Visual guidance:
+- Adhere to the design system and color palette below. Ensure hierarchy is obvious (scores/stats, section titles, details), with strong contrast for CTAs and interactive elements.
+
+## Components to Build
+- BuyerDashboardPage
+  - Layout wrapper with header, left content sections, and bottom navigation (persistent)
+  - Subcomponents: AuctionCalendar, WatchlistPanel, BiddingHistoryPanel, SubscriptionStatusCard, SavedFiltersPanel, KYCBadge
+- AuctionCard
+  - Displays asset thumbnail, title, category, location, scheduled time, current bid, status tag
+- AuctionList
+  - Renders list of AuctionCard items with real-time bid updates
+- WatchlistPanel
+  - List of saved assets with alert toggles and quick actions
+- SavedSearchCard
+  - Saved filter presets with load/apply and edit/delete actions
+- BiddingHistoryPanel
+  - History rows with asset link, bid amount, timestamp, result
+- SubscriptionStatusCard
+  - Plan name, renewal date, status badge, upgrade CTA
+- KYCVerificationPanel
+  - Status badge, required actions, admin approval flow controls (for admin panel; viewer shows status and next steps)
+- FiltersPanel
+  - Category, location, condition, price range inputs with validation
+- AlertsPanel (optional future enhancement)
+  - Global notifications related to bids, verification, or subscription events
+- DataVizBar
+  - Minimalist horizontal bar chart visuals for quick stats (active/inactive segments)
+
+Technical details:
+- All components should gracefully handle data that may be null or undefined; use data ?? [] patterns and Array.isArray checks.
+- Use useState<T[]>([]) for all array-based state; initialize with appropriate generic types.
+- Ensure API data is validated and guarded:
+  - const auctions = Array.isArray(response?.data) ? response.data : []
+  - const items = data ?? []
+  - Destructure with defaults: const { items: auctionsList = [], count = 0 } = response ?? {}
+
+## Implementation Requirements
+
+### Frontend
+- Pages and routes
+  - /buyer/dashboard (Role: buyer, requires subscription + verification)
+- UI Components
+  - Build responsive, accessible React components using TypeScript
+  - Tailwind CSS utility classes for rapid styling
+- State management
+  - Local UI state with useState; global state for user session through Supabase Auth context
+- Real-time data
+  - Integrate Supabase Realtime for live bid updates
+  - Safely connect to auction streams; implement reconnection logic
+- Accessibility
+  - Keyboard navigable, proper aria labels, sufficient color contrast
+- Performance
+  - Memoize expensive renders, use React.lazy/Suspense for heavy components if needed
+- Data handling
+  - Guard all array/map/filter/reduce calls with (items ?? []) or Array.isArray(item) checks
+  - Validate API responses before rendering
+- UI interactions
+  - Hover/active states with neon yellow-green glow on actionable elements
+  - Consistent card elevation, borders, and spacing per design system
+- Security (frontend)
+  - Hide gated sections for unauthorized users; show CTAs to upgrade/verify
+  - Do not rely solely on frontend for gating; rely on backend authorization
+
+### Backend
+- APIs and endpoints (supabase functions / edge functions)
+  - GET /buyer/dashboard: fetch combined data with:
+    - auctions: Upcoming and current with live status
+    - watchlist: user-specific
+    - biddingHistory: recent bids
+    - subscription: current plan and status
+    - savedFilters: user saved filter presets
+    - verificationStatus: KYC status + admin approval flag
+  - PATCH/POST endpoints for:
+    - Update watchlist item (toggle alerts)
+    - Save/rename/delete filter presets
+    - Update subscription status (on Stripe webhooks)
+    - Submit KYC verification data (status flow)
+  - Admin endpoints for verification approval workflow (admin panel integration)
+- Database schema (examples)
+  - buyers: id, user_id, subscription_id, kyc_status, verification_status, admin_approved, created_at, updated_at
+  - subscriptions: id, buyer_id, plan_id, status, current_period_start, current_period_end, next_billing_date
+  - auctions: id, asset_id, scheduled_at, batch_id, status, current_bid, reserve_price
+  - watchlists: id, buyer_id, asset_id, alert_enabled, alert_preferences (JSON)
+  - bids: id, buyer_id, auction_id, amount, created_at, status
+  - saved_filters: id, buyer_id, name, filters (JSON), created_at
+- Security
+  - Use Row-Level Security (RLS) to restrict access to buyer-owned data
+  - Validate inputs server-side; enforce rate limits on sensitive endpoints
+- Payments
+  - Stripe webhooks for subscription events; idempotent handling
+  - Gate access on the server side based on subscription status and KYC verification
+
+### Integration
+- Data flow
+  - BuyerDashboardPage fetches aggregated data from /buyer/dashboard
+  - Real-time bid updates push to relevant auction cards via Supabase Realtime channel
+  - Subscriptions and verifications gating logic runs on backend; frontend renders based on authenticated user state
+- UI State Sync
+  - When a user upgrades their plan or completes KYC, refresh dashboard data or optimistically reflect status changes
+- Notifications
+  - Email/SMS/Push for watchlist alerts and bid activity (configurable per user)
+
+## User Experience Flow
+1. User lands on /buyer/dashboard
+2. System checks authentication, then subscription status and KYC verification
+   - If not authenticated: redirect to login
+   - If not subscribed or KYC not verified: show gating panel guiding to upgrade and verification steps
+3. Dashboard loads with:
+   - Summary header: current subscription status, verification status
+   - Upcoming Auctions panel: list with real-time bid data
+   - Watchlist panel: saved assets and alert settings
+   - Bidding History: recent activity with outcomes
+   - Subscription Status Card: plan details and upgrade CTA
+   - Saved Filters: quick-load saved searches
+4. User interacts:
+   - Join an auction or view details
+   - Toggle watchlist alerts or save a new filter
+   - Update or apply saved filters
+   - Upgrade or initiate KYC verification if gated
+5. Admin verification flow (admin actions, if accessed via admin route)
+6. Real-time updates reflect bids, cancellations, or status changes instantly
+
+## Technical Specifications
+
+Data Models: [Schema details]
+- buyers(user_id, kyc_status, verification_status, admin_approved, created_at, updated_at)
+- subscriptions(id, buyer_id, plan_id, status, current_period_start, current_period_end, next_billing_date)
+- auctions(id, asset_id, scheduled_at, status, current_bid, reserve_price, batch_id)
+- bids(id, buyer_id, auction_id, amount, created_at, status)
+- watchlists(id, buyer_id, asset_id, alert_enabled, alert_preferences)
+- saved_filters(id, buyer_id, name, filters_json, created_at)
+- assets(id, title, category, location, condition, price)
+- kyc_records(id, buyer_id, status, admin_review_status, evidence, submitted_at)
+
+API Endpoints: [Routes and methods]
+- GET /api/buyer/dashboard
+- GET /api/buyer/watchlist
+- POST /api/buyer/watchlist/:asset_id/toggle
+- GET /api/buyer/bidding-history
+- GET /api/buyer/subscription
+- GET /api/buyer/saved-filters
+- POST /api/buyer/saved-filters
+- PATCH /api/buyer/saved-filters/:id
+- DELETE /api/buyer/saved-filters/:id
+- POST /api/kyc/submit
+- POST /api/kyc/verify/approve (admin)
+- POST /api/kyc/verify/reject (admin)
+- Stripe webhook: /webhooks/stripe (idempotent)
+
+Security: [Authentication, authorization requirements]
+- Authenticate with Supabase Auth; enforce user role 'buyer'
+- Backend RP guards: check subscription.active, kyc.verified and admin_approved
+- Use RLS policies for buyers data; restrict by user_id
+- Ensure all endpoints validate inputs; use CSRF protection where applicable; strict rate limiting
+- Webhooks must be idempotent and auditable; store event IDs
+
+Validation: [Input validation rules]
+- Filter inputs: category (string), location (string), condition (string), price_min/max (numbers within asset ranges)
+- Saved filters: name unique per buyer per user
+- KYC data: required fields validated on submit; admin approval status stored atomically
+- Auctions: ensure scheduled_at in future or current; handle nulls gracefully
+
+## Acceptance Criteria
+- [ ] The Buyer Dashboard page renders only for authenticated, subscription-active, KYC-verified buyers; gated states show upgrade/verify prompts
+- [ ] Auctions, watchlist, bidding history, and saved filters data are fetched safely with proper null guards: use data ?? [], Array.isArray checks
+- [ ] Real-time bid updates appear in UI without race conditions; no null-crash when data is missing
+- [ ] All array operations guarded (e.g., (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [])
+- [ ] Subscriptions and KYC gating enforced server-side; Stripe webhooks are idempotent
+- [ ] UI adheres to the design system: neon yellow-green accents, card shadows, grid spacing, accessible controls
+- [ ] Tests cover gating logic, data edge cases (empty arrays, null responses), and real-time update handling
+
+## UI/UX Guidelines
+Apply the project's design system:
+
+- Use the specified color palette and typography
+- Maintain a strict grid layout with generous padding (outer 20–24px, internal 12–16px)
+- Left-aligned data, centered navigation icons; persistent bottom navigation
+- Cards: 12–16px border radius, subtle shadows, hover glow with neon yellow-green
+- Data Viz: minimalist horizontal bars with neon yellow-green fill for active data
+- Interactive elements: bold, uppercase CTAs; clear focus states
+- Accessibility: high contrast, keyboard navigable, semantic HTML
+
+## Visual Style
+
+### Color Palette
+- Primary background: #FFFFFF
+- Secondary background: #F5F6FA
+- Primary accent: #EFFD2D
+- Secondary accent: #161616
+- Text primary: #181818
+- Text secondary: #7E7E7E
+- Borders/dividers: #E5E5EA
+- Success: #2ED573
+- Error: #FF4D4F
+- Tertiary accent: #FFFACD
+
+### Typography & Layout
+- Font family: Inter or similar geometric sans-serif
+- Weights: 400 body, 500 secondary emphasis, 700 headlines/scores
+- Hierarchy: Large bold numerals for scores, mid-size bold section titles, smaller regular for details
+- Layout: Grid with outer padding 20–24px; internal 12–16px; vertical stacking
+- Spacing: 8–16px gaps; clear separation between cards and sections
+- Alignment: Left data; centered icons for nav
+
+### Key Design Elements
+- Card Design: 12–16px radius, subtle elevation, light border or none
+- Hover/Active: Elevation + neon glow
+- Navigation: Bottom fixed pill-shaped bar; active neon icon fill
+- Data Visualization: Minimalist horizontal bars; green for positive states
+- Interactive Elements: Rounded buttons; neon accent CTAs; clean inputs
+
+### Design Philosophy
+- Modern, minimalist, high-contrast with bold action accents
+- Clarity, scan-ability, and strong visual hierarchy
+- Professional tone with energetic accents
+- Usability-first, accessible, intuitive navigation
+- Quick comprehension and frictionless interactions for time-sensitive tasks
+
+---
+
+## Mandatory Coding Standards — Runtime Safety
+
+CRITICAL: Apply these rules in all generated code to prevent runtime crashes.
+
+1. Supabase query results: Always use nullish coalescing — const items = data ?? [].
+2. Array methods: Never call on a value that could be null/undefined or non-array. Guard with (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
+3. React useState for arrays/objects: Initialize with correct type — useState<Type[]>([]).
+4. API response shapes: Always validate — const list = Array.isArray(response?.data) ? response.data : [].
+5. Optional chaining: Use obj?.property?.nested when accessing nested API responses.
+6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
+
+---
+
+This prompt provides a comprehensive, actionable blueprint for AI development tools to build the Buyer Dashboard with gated access, verification workflow, and a robust integration surface aligned to the project's stack and design system. It emphasizes runtime safety, data validation, real-time interactivity, and a polished UI that matches the specified visual/UX standards. If you want, I can tailor further with exact API schemas, sample React components, or a runnable project scaffold. for style.
+
+CRITICAL DESIGN REQUIREMENTS:
+- You MUST follow ALL design principles and patterns specified in the Design Reference above
+- Do NOT deviate from the design specifications without explicit user permission
+- Implement ALL visual design elements (colors, typography, spacing, shadows, animations) as specified
+- Follow the layout patterns and component designs exactly as documented
+- Ensure all interactions and micro-animations match the reference specifications
+
+CRITICAL TECHNICAL REQUIREMENTS:
+- React 18.3.1, React Router 6.30.1
+- Tailwind CSS v3 with tailwind.config.js and custom keyframes
+- @tailwindcss/typography plugin for rich text content
+- Tailwind CSS animations (NOT Motion library or framer-motion)
+- Sonner for toasts
+- Recharts for data visualization
+- Native fetch() with API utilities in src/lib/api.ts
+- Design system with CSS custom properties
+- Use RGB color values for theming
+- When Supabase is configured: use Edge Functions for LLM and server-only logic; never expose API keys in the client
+
+=== TASK ===
+# Buyer Dashboard
+
+## Overview
+Create a role-specific Buyer Dashboard for verified buyers that surfaces available auctions, watchlist, bidding history, subscription status, and saved filters. The page must enforce subscription gating and a KYC/verification workflow with admin approval. It should be built with a reuse-first approach leveraging the project's preferred stack (Next.js, TypeScript, Tailwind CSS on the frontend; Supabase with Postgres, RLS, Realtime on the backend; Stripe for payments; Vercel hosting). All code must be resilient to null/undefined values and guarded against common runtime pitfalls as described in the mandatory coding standards.
+
+## Page Description (Full Detail)
+What this page is:
+- A role-specific, gated Buyer Dashboard for verified buyers that combines multiple subviews into a single, cohesive dashboard: 
+  - Available Auctions (upcoming and current batches with real-time bid activity indicators)
+  - Watchlist and Saved Searches (with alerts/notification settings)
+  - Bidding History (recent bids, outcomes, and outbid notifications)
+  - Subscription Status (current plan, renewal date, upgrade/renew options)
+  - Saved Filters (category, location, condition, price range) with quick-load presets
+  - KYC/Verification status indicator (with admin approval workflow status and call-to-action for pending items)
+
+Goals:
+- Gate access behind an active Stripe-based subscription and a verified KYC status with admin approval. If not authorized, present a guided onboarding/verification flow and appropriate upgrade prompts.
+- Provide fast, responsive UX with clear data visualization shows (e.g., horizontal bar charts for activity, status pills for subscription, compact auction cards).
+- Ensure data integrity and real-time responsiveness with Supabase Realtime for live bidding, and safe data handling on the client (null checks, array guards).
+
+Connected features:
+- Buyer Subscription & Verification: Access restricted by subscription plan and KYC/admin approval workflow. Admins review verification submissions and trigger status changes.
+- Auction engine and live bidding data (read-only in this dashboard) feed from the real-time auction core.
+- Saved filters and watchlists stored per-buyer in Supabase, with options to export or share saved searches (future feature).
+
+UI elements and guidance:
+- Auction Calendar / Upcoming Batches: list of scheduled auctions with date/time, location, asset summary, current bid, and a CTA to join or view details.
+- Watchlist / Saved Searches: quick access cards, with alert toggles (email/SMS/push) and status indicators.
+- Bid Activity: timeline-style or compact list with bid amount, time, status (won/lost/outbid), and action to view asset.
+- Subscription Status Card: plan name, renewal date, remaining days, upgrade/cancel actions, and a lightweight credit/balance indicator if applicable.
+- Filters/Quick Search: multi-select fields for category, location, condition, price range sliders, and saved presets.
+
+Visual guidance:
+- Adhere to the design system and color palette below. Ensure hierarchy is obvious (scores/stats, section titles, details), with strong contrast for CTAs and interactive elements.
+
+## Components to Build
+- BuyerDashboardPage
+  - Layout wrapper with header, left content sections, and bottom navigation (persistent)
+  - Subcomponents: AuctionCalendar, WatchlistPanel, BiddingHistoryPanel, SubscriptionStatusCard, SavedFiltersPanel, KYCBadge
+- AuctionCard
+  - Displays asset thumbnail, title, category, location, scheduled time, current bid, status tag
+- AuctionList
+  - Renders list of AuctionCard items with real-time bid updates
+- WatchlistPanel
+  - List of saved assets with alert toggles and quick actions
+- SavedSearchCard
+  - Saved filter presets with load/apply and edit/delete actions
+- BiddingHistoryPanel
+  - History rows with asset link, bid amount, timestamp, result
+- SubscriptionStatusCard
+  - Plan name, renewal date, status badge, upgrade CTA
+- KYCVerificationPanel
+  - Status badge, required actions, admin approval flow controls (for admin panel; viewer shows status and next steps)
+- FiltersPanel
+  - Category, location, condition, price range inputs with validation
+- AlertsPanel (optional future enhancement)
+  - Global notifications related to bids, verification, or subscription events
+- DataVizBar
+  - Minimalist horizontal bar chart visuals for quick stats (active/inactive segments)
+
+Technical details:
+- All components should gracefully handle data that may be null or undefined; use data ?? [] patterns and Array.isArray checks.
+- Use useState<T[]>([]) for all array-based state; initialize with appropriate generic types.
+- Ensure API data is validated and guarded:
+  - const auctions = Array.isArray(response?.data) ? response.data : []
+  - const items = data ?? []
+  - Destructure with defaults: const { items: auctionsList = [], count = 0 } = response ?? {}
+
+## Implementation Requirements
+
+### Frontend
+- Pages and routes
+  - /buyer/dashboard (Role: buyer, requires subscription + verification)
+- UI Components
+  - Build responsive, accessible React components using TypeScript
+  - Tailwind CSS utility classes for rapid styling
+- State management
+  - Local UI state with useState; global state for user session through Supabase Auth context
+- Real-time data
+  - Integrate Supabase Realtime for live bid updates
+  - Safely connect to auction streams; implement reconnection logic
+- Accessibility
+  - Keyboard navigable, proper aria labels, sufficient color contrast
+- Performance
+  - Memoize expensive renders, use React.lazy/Suspense for heavy components if needed
+- Data handling
+  - Guard all array/map/filter/reduce calls with (items ?? []) or Array.isArray(item) checks
+  - Validate API responses before rendering
+- UI interactions
+  - Hover/active states with neon yellow-green glow on actionable elements
+  - Consistent card elevation, borders, and spacing per design system
+- Security (frontend)
+  - Hide gated sections for unauthorized users; show CTAs to upgrade/verify
+  - Do not rely solely on frontend for gating; rely on backend authorization
+
+### Backend
+- APIs and endpoints (supabase functions / edge functions)
+  - GET /buyer/dashboard: fetch combined data with:
+    - auctions: Upcoming and current with live status
+    - watchlist: user-specific
+    - biddingHistory: recent bids
+    - subscription: current plan and status
+    - savedFilters: user saved filter presets
+    - verificationStatus: KYC status + admin approval flag
+  - PATCH/POST endpoints for:
+    - Update watchlist item (toggle alerts)
+    - Save/rename/delete filter presets
+    - Update subscription status (on Stripe webhooks)
+    - Submit KYC verification data (status flow)
+  - Admin endpoints for verification approval workflow (admin panel integration)
+- Database schema (examples)
+  - buyers: id, user_id, subscription_id, kyc_status, verification_status, admin_approved, created_at, updated_at
+  - subscriptions: id, buyer_id, plan_id, status, current_period_start, current_period_end, next_billing_date
+  - auctions: id, asset_id, scheduled_at, batch_id, status, current_bid, reserve_price
+  - watchlists: id, buyer_id, asset_id, alert_enabled, alert_preferences (JSON)
+  - bids: id, buyer_id, auction_id, amount, created_at, status
+  - saved_filters: id, buyer_id, name, filters (JSON), created_at
+- Security
+  - Use Row-Level Security (RLS) to restrict access to buyer-owned data
+  - Validate inputs server-side; enforce rate limits on sensitive endpoints
+- Payments
+  - Stripe webhooks for subscription events; idempotent handling
+  - Gate access on the server side based on subscription status and KYC verification
+
+### Integration
+- Data flow
+  - BuyerDashboardPage fetches aggregated data from /buyer/dashboard
+  - Real-time bid updates push to relevant auction cards via Supabase Realtime channel
+  - Subscriptions and verifications gating logic runs on backend; frontend renders based on authenticated user state
+- UI State Sync
+  - When a user upgrades their plan or completes KYC, refresh dashboard data or optimistically reflect status changes
+- Notifications
+  - Email/SMS/Push for watchlist alerts and bid activity (configurable per user)
+
+## User Experience Flow
+1. User lands on /buyer/dashboard
+2. System checks authentication, then subscription status and KYC verification
+   - If not authenticated: redirect to login
+   - If not subscribed or KYC not verified: show gating panel guiding to upgrade and verification steps
+3. Dashboard loads with:
+   - Summary header: current subscription status, verification status
+   - Upcoming Auctions panel: list with real-time bid data
+   - Watchlist panel: saved assets and alert settings
+   - Bidding History: recent activity with outcomes
+   - Subscription Status Card: plan details and upgrade CTA
+   - Saved Filters: quick-load saved searches
+4. User interacts:
+   - Join an auction or view details
+   - Toggle watchlist alerts or save a new filter
+   - Update or apply saved filters
+   - Upgrade or initiate KYC verification if gated
+5. Admin verification flow (admin actions, if accessed via admin route)
+6. Real-time updates reflect bids, cancellations, or status changes instantly
+
+## Technical Specifications
+
+Data Models: [Schema details]
+- buyers(user_id, kyc_status, verification_status, admin_approved, created_at, updated_at)
+- subscriptions(id, buyer_id, plan_id, status, current_period_start, current_period_end, next_billing_date)
+- auctions(id, asset_id, scheduled_at, status, current_bid, reserve_price, batch_id)
+- bids(id, buyer_id, auction_id, amount, created_at, status)
+- watchlists(id, buyer_id, asset_id, alert_enabled, alert_preferences)
+- saved_filters(id, buyer_id, name, filters_json, created_at)
+- assets(id, title, category, location, condition, price)
+- kyc_records(id, buyer_id, status, admin_review_status, evidence, submitted_at)
+
+API Endpoints: [Routes and methods]
+- GET /api/buyer/dashboard
+- GET /api/buyer/watchlist
+- POST /api/buyer/watchlist/:asset_id/toggle
+- GET /api/buyer/bidding-history
+- GET /api/buyer/subscription
+- GET /api/buyer/saved-filters
+- POST /api/buyer/saved-filters
+- PATCH /api/buyer/saved-filters/:id
+- DELETE /api/buyer/saved-filters/:id
+- POST /api/kyc/submit
+- POST /api/kyc/verify/approve (admin)
+- POST /api/kyc/verify/reject (admin)
+- Stripe webhook: /webhooks/stripe (idempotent)
+
+Security: [Authentication, authorization requirements]
+- Authenticate with Supabase Auth; enforce user role 'buyer'
+- Backend RP guards: check subscription.active, kyc.verified and admin_approved
+- Use RLS policies for buyers data; restrict by user_id
+- Ensure all endpoints validate inputs; use CSRF protection where applicable; strict rate limiting
+- Webhooks must be idempotent and auditable; store event IDs
+
+Validation: [Input validation rules]
+- Filter inputs: category (string), location (string), condition (string), price_min/max (numbers within asset ranges)
+- Saved filters: name unique per buyer per user
+- KYC data: required fields validated on submit; admin approval status stored atomically
+- Auctions: ensure scheduled_at in future or current; handle nulls gracefully
+
+## Acceptance Criteria
+- [ ] The Buyer Dashboard page renders only for authenticated, subscription-active, KYC-verified buyers; gated states show upgrade/verify prompts
+- [ ] Auctions, watchlist, bidding history, and saved filters data are fetched safely with proper null guards: use data ?? [], Array.isArray checks
+- [ ] Real-time bid updates appear in UI without race conditions; no null-crash when data is missing
+- [ ] All array operations guarded (e.g., (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [])
+- [ ] Subscriptions and KYC gating enforced server-side; Stripe webhooks are idempotent
+- [ ] UI adheres to the design system: neon yellow-green accents, card shadows, grid spacing, accessible controls
+- [ ] Tests cover gating logic, data edge cases (empty arrays, null responses), and real-time update handling
+
+## UI/UX Guidelines
+Apply the project's design system:
+
+- Use the specified color palette and typography
+- Maintain a strict grid layout with generous padding (outer 20–24px, internal 12–16px)
+- Left-aligned data, centered navigation icons; persistent bottom navigation
+- Cards: 12–16px border radius, subtle shadows, hover glow with neon yellow-green
+- Data Viz: minimalist horizontal bars with neon yellow-green fill for active data
+- Interactive elements: bold, uppercase CTAs; clear focus states
+- Accessibility: high contrast, keyboard navigable, semantic HTML
+
+## Visual Style
+
+### Color Palette
+- Primary background: #FFFFFF
+- Secondary background: #F5F6FA
+- Primary accent: #EFFD2D
+- Secondary accent: #161616
+- Text primary: #181818
+- Text secondary: #7E7E7E
+- Borders/dividers: #E5E5EA
+- Success: #2ED573
+- Error: #FF4D4F
+- Tertiary accent: #FFFACD
+
+### Typography & Layout
+- Font family: Inter or similar geometric sans-serif
+- Weights: 400 body, 500 secondary emphasis, 700 headlines/scores
+- Hierarchy: Large bold numerals for scores, mid-size bold section titles, smaller regular for details
+- Layout: Grid with outer padding 20–24px; internal 12–16px; vertical stacking
+- Spacing: 8–16px gaps; clear separation between cards and sections
+- Alignment: Left data; centered icons for nav
+
+### Key Design Elements
+- Card Design: 12–16px radius, subtle elevation, light border or none
+- Hover/Active: Elevation + neon glow
+- Navigation: Bottom fixed pill-shaped bar; active neon icon fill
+- Data Visualization: Minimalist horizontal bars; green for positive states
+- Interactive Elements: Rounded buttons; neon accent CTAs; clean inputs
+
+### Design Philosophy
+- Modern, minimalist, high-contrast with bold action accents
+- Clarity, scan-ability, and strong visual hierarchy
+- Professional tone with energetic accents
+- Usability-first, accessible, intuitive navigation
+- Quick comprehension and frictionless interactions for time-sensitive tasks
+
+---
+
+## Mandatory Coding Standards — Runtime Safety
+
+CRITICAL: Apply these rules in all generated code to prevent runtime crashes.
+
+1. Supabase query results: Always use nullish coalescing — const items = data ?? [].
+2. Array methods: Never call on a value that could be null/undefined or non-array. Guard with (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : [].
+3. React useState for arrays/objects: Initialize with correct type — useState<Type[]>([]).
+4. API response shapes: Always validate — const list = Array.isArray(response?.data) ? response.data : [].
+5. Optional chaining: Use obj?.property?.nested when accessing nested API responses.
+6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
+
+---
+
+This prompt provides a comprehensive, actionable blueprint for AI development tools to build the Buyer Dashboard with gated access, verification workflow, and a robust integration surface aligned to the project's stack and design system. It emphasizes runtime safety, data validation, real-time interactivity, and a polished UI that matches the specified visual/UX standards. If you want, I can tailor further with exact API schemas, sample React components, or a runnable project scaffold.
+
+=== SUCCESS CRITERIA ===
+# Success Criteria Checklist
+
+## Code Quality
+
+### TypeScript
+- [ ] No TypeScript errors (`tsc --noEmit` passes)
+- [ ] All functions and components have proper type definitions
+- [ ] No `any` types used (use `unknown` if type is truly unknown)
+- [ ] Props interfaces defined for all components
+- [ ] API responses have type definitions
+
+### Code Standards
+- [ ] All imports use path aliases (@/ prefix)
+- [ ] Components follow the established naming convention
+- [ ] Files are organized in correct directories
+- [ ] No unused imports or variables
+- [ ] Consistent code formatting
+
+## Component Implementation
+
+### UI Components
+- [ ] Use shadcn/ui components (Button, Card, Input, etc.) instead of building from scratch
+- [ ] All interactive elements have hover states
+- [ ] Components use the `cn()` utility for class merging
+- [ ] Proper TypeScript props interfaces defined
+- [ ] Components are responsive (mobile, tablet, desktop)
+
+### Animations
+- [ ] Motion library used for all animations (NOT framer-motion)
+- [ ] Page transitions implemented with fade/slide
+- [ ] Interactive elements have whileHover/whileTap animations
+- [ ] List items use stagger animations where appropriate
+- [ ] Animations respect `prefers-reduced-motion`
+
+### Icons
+- [ ] Lucide React icons used consistently
+- [ ] Icons have consistent sizing (h-4 w-4, h-5 w-5, h-6 w-6)
+- [ ] Icon colors match design system (text-primary, text-muted-foreground)
+
+## Data Management
+
+### React Query
+- [ ] All data fetching uses React Query hooks
+- [ ] Query keys follow the established pattern
+- [ ] Mutations invalidate related queries
+- [ ] Loading and error states handled
+- [ ] Optimistic updates implemented where appropriate
+
+### Forms
+- [ ] Forms use react-hook-form
+- [ ] Validation uses Zod schemas
+- [ ] Error messages display properly
+- [ ] Form submission shows loading state
+- [ ] Success/error feedback via toast notifications
+
+### API Layer
+- [ ] API functions in src/api/ directory
+- [ ] Axios used for HTTP requests
+- [ ] Proper error handling with try/catch
+- [ ] Auth tokens handled by interceptors
+- [ ] Type-safe API function signatures
+
+## User Experience
+
+### Notifications
+- [ ] Sonner toasts used for all notifications
+- [ ] Success actions show success toast
+- [ ] Errors show descriptive error messages
+- [ ] Loading states show toast.loading()
+
+### Loading States
+- [ ] Skeleton loaders shown during data fetch
+- [ ] Buttons show loading state during submission
+- [ ] Disabled state applied during async operations
+
+### Error Handling
+- [ ] Network errors caught and displayed
+- [ ] User-friendly error messages (no stack traces)
+- [ ] Fallback UI for error states
+- [ ] No unhandled promise rejections
+
+## Navigation
+
+### Route Accessibility
+- [ ] All pages have routes defined in router configuration
+- [ ] Every page is accessible through navigation (menu, sidebar, or direct URL)
+- [ ] Main pages (Dashboard, Home, Settings, etc.) accessible from primary navigation
+- [ ] Secondary pages accessible through contextual navigation or direct links
+- [ ] Deep-linked pages have breadcrumbs or back navigation
+- [ ] 404/Not Found page implemented for invalid routes
+- [ ] Protected routes have proper authentication checks
+- [ ] Navigation state persists across page refreshes where appropriate
+
+### Navigation UX
+- [ ] Active route highlighted in navigation menu
+- [ ] Clear visual hierarchy in navigation structure
+- [ ] Mobile navigation is accessible and usable
+- [ ] Navigation items have hover/focus states
+- [ ] Nested routes show parent-child relationships
+- [ ] User can always return to main areas (Dashboard/Home)
+
+## Styling
+
+### Tailwind CSS
+- [ ] Tailwind v3 classes used
+- [ ] HSL color variables from design system
+- [ ] Custom CSS properties used where defined
+- [ ] Responsive breakpoints: mobile-first approach
+- [ ] Dark mode support via CSS variables
+
+### Design System
+- [ ] Colors use theme variables (primary, secondary, accent)
+- [ ] Spacing uses Tailwind scale (p-4, gap-6, etc.)
+- [ ] Border radius uses theme values (rounded-lg)
+- [ ] Shadows use theme values (shadow-card)
+- [ ] Typography follows Inter font system
+
+## Accessibility
+
+- [ ] Semantic HTML elements used
+- [ ] Buttons have descriptive labels
+- [ ] Forms have proper labels
+- [ ] Focus states visible on interactive elements
+- [ ] Color contrast meets WCAG standards
+
+## Performance
+
+- [ ] No console.log statements in production code
+- [ ] No console errors in browser
+- [ ] Images optimized (WebP, lazy loading)
+- [ ] Large lists use virtualization if needed
+- [ ] React Query cache configured appropriately
+
+## Testing Readiness
+
+- [ ] Components structured for easy testing
+- [ ] Business logic separated from presentation
+- [ ] Mock-friendly API layer
+- [ ] No hardcoded values that should be configurable
+- [ ] Environment variables properly configured
+
+## Final Checks
+
+- [ ] Code builds without errors (`npm run build`)
+- [ ] Development server runs without errors (`npm run dev`)
+- [ ] No TypeScript errors in editor
+- [ ] Browser console is clean (no errors or warnings)
+- [ ] All functionality works as expected
+- [ ] Code follows existing project patterns
+- [ ] Changes are consistent with the rest of the codebase
+
+
+
+IMPORTANT: ALL styling and design decisions must follow the Design Reference section above EXACTLY. Do not make arbitrary design choices.
+
+Analyze the existing project structure and implement the task following the patterns already established. Ensure all success criteria are met.
