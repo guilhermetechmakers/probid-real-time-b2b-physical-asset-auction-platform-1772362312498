@@ -15,6 +15,11 @@ import type {
   Role,
   AuditLogEntry,
   AdminDashboardMetrics,
+  AdminUser,
+  AdminUserDetail,
+  UserBanInput,
+  UserRestrictionInput,
+  BulkActionInput,
 } from '@/types/admin'
 
 const API_BASE = import.meta.env.VITE_API_URL ?? ''
@@ -458,3 +463,310 @@ export async function assignRole(userId: string, roleId: string): Promise<{ succ
     return { success: false, error: err?.message ?? 'Failed to assign role' }
   }
 }
+
+/** Map raw row to AdminUser */
+function mapAdminUser(row: Record<string, unknown>): AdminUser {
+  return {
+    id: String(row.id ?? row.user_id ?? ''),
+    email: String(row.email ?? ''),
+    name: typeof row.name === 'string' ? row.name : undefined,
+    role: (row.role ?? 'buyer') as AdminUser['role'],
+    status: (row.status ?? 'active') as AdminUser['status'],
+    kycStatus: (row.kyc_status ?? row.kycStatus ?? 'pending') as AdminUser['kycStatus'],
+    subscriptionPlan: typeof row.subscription_plan === 'string' ? row.subscription_plan : (row.subscriptionPlan as string | undefined),
+    subscriptionStatus: (row.subscription_status ?? row.subscriptionStatus ?? 'none') as AdminUser['subscriptionStatus'],
+    isBanned: Boolean(row.is_banned ?? row.isBanned ?? false),
+    hasRestrictions: Boolean(row.has_restrictions ?? row.hasRestrictions ?? false),
+    lastActive: typeof row.last_active === 'string' ? row.last_active : (row.lastActive as string | undefined),
+    createdAt: String(row.created_at ?? row.createdAt ?? ''),
+    updatedAt: typeof row.updated_at === 'string' ? row.updated_at : (row.updatedAt as string | undefined),
+    buyerId: typeof row.buyer_id === 'string' ? row.buyer_id : (row.buyerId as string | undefined),
+    sellerId: typeof row.seller_id === 'string' ? row.seller_id : (row.sellerId as string | undefined),
+  }
+}
+
+export interface FetchAdminUsersParams {
+  search?: string
+  role?: string
+  status?: string
+  kyc?: string
+  subscription?: string
+  page?: number
+  limit?: number
+}
+
+export async function fetchAdminUsers(filters?: FetchAdminUsersParams): Promise<{ users: AdminUser[]; total: number }> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ users?: Record<string, unknown>[]; total?: number }>('admin-users', { body: filters ?? {} })
+      if (error) throw error
+      const list = data?.users ?? []
+      const users = Array.isArray(list) ? list.map(mapAdminUser) : []
+      return { users, total: data?.total ?? users.length }
+    }
+    const params = new URLSearchParams()
+    if (filters?.search) params.set('search', filters.search)
+    if (filters?.role) params.set('role', filters.role)
+    if (filters?.status) params.set('status', filters.status)
+    if (filters?.kyc) params.set('kyc', filters.kyc)
+    if (filters?.subscription) params.set('subscription', filters.subscription)
+    if (filters?.page != null) params.set('page', String(filters.page))
+    if (filters?.limit != null) params.set('limit', String(filters.limit))
+    const qs = params.toString()
+    const res = await api.get<{ users?: Record<string, unknown>[]; total?: number }>(`/api/admin/users?${qs}`)
+    const list = res?.users ?? []
+    return {
+      users: Array.isArray(list) ? list.map(mapAdminUser) : [],
+      total: res?.total ?? 0,
+    }
+  } catch {
+    return { users: [], total: 0 }
+  }
+}
+
+export async function fetchAdminUserById(id: string): Promise<AdminUserDetail | null> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<Record<string, unknown>>('admin-users-detail', { body: { id } })
+      if (error || !data?.user) return null
+      const u = data.user as Record<string, unknown>
+      const base = mapAdminUser(u)
+      const kycDocs = (u.kyc_documents ?? u.kycDocuments ?? []) as Record<string, unknown>[]
+      const bans = (u.bans ?? []) as Record<string, unknown>[]
+      const restrictions = (u.restrictions ?? []) as Record<string, unknown>[]
+      const recentActivity = (u.recent_activity ?? u.recentActivity ?? []) as Record<string, unknown>[]
+      const financialHolds = (u.financial_holds ?? u.financialHolds ?? []) as Record<string, unknown>[]
+      return {
+        ...base,
+        kycDocuments: Array.isArray(kycDocs)
+          ? kycDocs.map((d) => ({ type: String(d.type ?? ''), url: String(d.url ?? ''), status: typeof d.status === 'string' ? d.status : undefined }))
+          : undefined,
+        bans: Array.isArray(bans)
+          ? bans.map((b) => ({
+              id: String(b.id ?? ''),
+              reason: String(b.reason ?? ''),
+              startAt: String(b.start_at ?? b.startAt ?? ''),
+              endAt: typeof b.end_at === 'string' ? b.end_at : (b.endAt as string | undefined),
+              active: Boolean(b.active ?? true),
+            }))
+          : undefined,
+        restrictions: Array.isArray(restrictions)
+          ? restrictions.map((r) => ({
+              id: String(r.id ?? ''),
+              type: String(r.type ?? ''),
+              reasons: Array.isArray(r.reasons) ? r.reasons.map(String) : [],
+              expiresAt: typeof r.expires_at === 'string' ? r.expires_at : (r.expiresAt as string | undefined),
+              active: Boolean(r.active ?? true),
+            }))
+          : undefined,
+        recentActivity: Array.isArray(recentActivity) ? recentActivity.map(mapAuditLog) : undefined,
+        financialHolds: Array.isArray(financialHolds)
+          ? financialHolds.map((h) => ({ amount: Number(h.amount ?? 0), reason: String(h.reason ?? '') }))
+          : undefined,
+      }
+    }
+    const res = await api.get<{ user?: Record<string, unknown> }>(`/api/admin/users/${encodeURIComponent(id)}`)
+    const u = res?.user
+    if (!u) return null
+    const base = mapAdminUser(u)
+    const kycDocs = (u.kyc_documents ?? u.kycDocuments ?? []) as Record<string, unknown>[]
+    const bans = (u.bans ?? []) as Record<string, unknown>[]
+    const restrictions = (u.restrictions ?? []) as Record<string, unknown>[]
+    const recentActivity = (u.recent_activity ?? u.recentActivity ?? []) as Record<string, unknown>[]
+    const financialHolds = (u.financial_holds ?? u.financialHolds ?? []) as Record<string, unknown>[]
+    return {
+      ...base,
+      kycDocuments: Array.isArray(kycDocs)
+        ? kycDocs.map((d) => ({ type: String(d.type ?? ''), url: String(d.url ?? ''), status: typeof d.status === 'string' ? d.status : undefined }))
+        : undefined,
+      bans: Array.isArray(bans)
+        ? bans.map((b) => ({
+            id: String(b.id ?? ''),
+            reason: String(b.reason ?? ''),
+            startAt: String(b.start_at ?? b.startAt ?? ''),
+            endAt: typeof b.end_at === 'string' ? b.end_at : (b.endAt as string | undefined),
+            active: Boolean(b.active ?? true),
+          }))
+        : undefined,
+      restrictions: Array.isArray(restrictions)
+        ? restrictions.map((r) => ({
+            id: String(r.id ?? ''),
+            type: String(r.type ?? ''),
+            reasons: Array.isArray(r.reasons) ? r.reasons.map(String) : [],
+            expiresAt: typeof r.expires_at === 'string' ? r.expires_at : (r.expiresAt as string | undefined),
+            active: Boolean(r.active ?? true),
+          }))
+        : undefined,
+      recentActivity: Array.isArray(recentActivity) ? recentActivity.map(mapAuditLog) : undefined,
+      financialHolds: Array.isArray(financialHolds)
+        ? financialHolds.map((h) => ({ amount: Number(h.amount ?? 0), reason: String(h.reason ?? '') }))
+        : undefined,
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Aliases for root components compatibility */
+export { fetchAdminUserById as fetchAdminUserDetail, resendKycRequest as resendUserKyc }
+
+export async function banUser(id: string, input: UserBanInput): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; error?: string }>('admin-users-ban', { body: { id, ...input } })
+      if (error) return { success: false, error: error.message }
+      return { success: data?.success ?? false, error: data?.error }
+    }
+    const res = await api.post<{ success?: boolean; error?: string }>(`/api/admin/users/${encodeURIComponent(id)}/ban`, input)
+    return { success: res?.success ?? false, error: res?.error }
+  } catch (e) {
+    const err = e as { message?: string }
+    return { success: false, error: err?.message ?? 'Failed to ban user' }
+  }
+}
+
+export async function unbanUser(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; error?: string }>('admin-users-unban', { body: { id } })
+      if (error) return { success: false, error: error.message }
+      return { success: data?.success ?? false, error: data?.error }
+    }
+    const res = await api.post<{ success?: boolean; error?: string }>(`/api/admin/users/${encodeURIComponent(id)}/unban`, {})
+    return { success: res?.success ?? false, error: res?.error }
+  } catch (e) {
+    const err = e as { message?: string }
+    return { success: false, error: err?.message ?? 'Failed to unban user' }
+  }
+}
+
+export async function changeUserSubscription(id: string, planId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; error?: string }>('admin-users-change-subscription', { body: { id, planId } })
+      if (error) return { success: false, error: error.message }
+      return { success: data?.success ?? false, error: data?.error }
+    }
+    const res = await api.post<{ success?: boolean; error?: string }>(`/api/admin/users/${encodeURIComponent(id)}/change-subscription`, { planId })
+    return { success: res?.success ?? false, error: res?.error }
+  } catch (e) {
+    const err = e as { message?: string }
+    return { success: false, error: err?.message ?? 'Failed to change subscription' }
+  }
+}
+
+export async function resendKycRequest(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; error?: string }>('admin-users-resend-kyc', { body: { id } })
+      if (error) return { success: false, error: error.message }
+      return { success: data?.success ?? false, error: data?.error }
+    }
+    const res = await api.post<{ success?: boolean; error?: string }>(`/api/admin/users/${encodeURIComponent(id)}/resend-kyc`, {})
+    return { success: res?.success ?? false, error: res?.error }
+  } catch (e) {
+    const err = e as { message?: string }
+    return { success: false, error: err?.message ?? 'Failed to resend KYC request' }
+  }
+}
+
+export async function addUserRestriction(id: string, input: UserRestrictionInput): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; error?: string }>('admin-users-restrict', { body: { id, ...input } })
+      if (error) return { success: false, error: error.message }
+      return { success: data?.success ?? false, error: data?.error }
+    }
+    const res = await api.post<{ success?: boolean; error?: string }>(`/api/admin/users/${encodeURIComponent(id)}/restrict`, input)
+    return { success: res?.success ?? false, error: res?.error }
+  } catch (e) {
+    const err = e as { message?: string }
+    return { success: false, error: err?.message ?? 'Failed to add restriction' }
+  }
+}
+
+export async function removeUserRestriction(userId: string, restrictionId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; error?: string }>('admin-users-remove-restriction', { body: { userId, restrictionId } })
+      if (error) return { success: false, error: error.message }
+      return { success: data?.success ?? false, error: data?.error }
+    }
+    const res = await api.post<{ success?: boolean; error?: string }>(`/api/admin/users/${encodeURIComponent(userId)}/restrictions/${encodeURIComponent(restrictionId)}/remove`, {})
+    return { success: res?.success ?? false, error: res?.error }
+  } catch (e) {
+    const err = e as { message?: string }
+    return { success: false, error: err?.message ?? 'Failed to remove restriction' }
+  }
+}
+
+export interface BulkActionParams {
+  userIds: string[]
+  action: 'resend_kyc' | 'change_subscription' | 'ban' | 'unban'
+  reason?: string
+  planId?: string
+}
+
+export async function bulkActionUsers(
+  input: BulkActionInput | BulkActionParams
+): Promise<{ success: boolean; results?: { userId: string; success: boolean; error?: string }[]; error?: string }> {
+  const body =
+    'payload' in input
+      ? input
+      : {
+          userIds: input.userIds,
+          action:
+            input.action === 'change_subscription'
+              ? ('change_plan' as const)
+              : (input.action === 'unban' ? 'ban' : input.action) as 'resend_kyc' | 'change_plan' | 'ban',
+          payload:
+            input.action === 'ban' || input.action === 'unban'
+              ? { reason: (input as BulkActionParams).reason ?? 'Bulk action' }
+              : input.action === 'change_subscription'
+                ? { planId: (input as BulkActionParams).planId }
+                : undefined,
+        }
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ success?: boolean; results?: { userId: string; success: boolean; error?: string }[]; error?: string }>('admin-users-bulk-action', { body })
+      if (error) return { success: false, error: error.message }
+      return {
+        success: data?.success ?? false,
+        results: Array.isArray(data?.results) ? data.results : undefined,
+        error: data?.error,
+      }
+    }
+    const res = await api.post<{ success?: boolean; results?: { userId: string; success: boolean; error?: string }[]; error?: string }>('/api/admin/users/bulk-action', body)
+    return {
+      success: res?.success ?? false,
+      results: Array.isArray(res?.results) ? res.results : undefined,
+      error: res?.error,
+    }
+  } catch (e) {
+    const err = e as { message?: string }
+    return { success: false, error: err?.message ?? 'Failed to perform bulk action' }
+  }
+}
+
+export async function fetchAuditLogsByUserId(userId: string, filters?: { action?: string; from?: string; to?: string }): Promise<AuditLogEntry[]> {
+  try {
+    if (useSupabaseFunctions) {
+      const { data, error } = await supabase.functions.invoke<{ logs?: Record<string, unknown>[] }>('admin-audit-logs', {
+        body: { ...filters, userId, entityType: 'user' },
+      })
+      if (error) throw error
+      const list = data?.logs ?? []
+      return Array.isArray(list) ? list.map(mapAuditLog) : []
+    }
+    const params = new URLSearchParams({ userId })
+    if (filters?.action) params.set('action', filters.action)
+    if (filters?.from) params.set('from', filters.from)
+    if (filters?.to) params.set('to', filters.to)
+    const data = await api.get<{ logs?: Record<string, unknown>[] }>(`/api/admin/audit-logs?${params.toString()}`)
+    const list = data?.logs ?? []
+    return Array.isArray(list) ? list.map(mapAuditLog) : []
+  } catch {
+    return []
+  }
+}
+

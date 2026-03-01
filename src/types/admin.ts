@@ -156,3 +156,74 @@ export interface AdminDashboardMetrics {
   openDisputes: number
   totalRevenue: number
 }
+
+/** Admin User Management types */
+export type AdminUserRole = 'admin' | 'ops' | 'seller' | 'buyer'
+
+export type UserStatus = 'active' | 'suspended' | 'pending'
+
+export type UserKycStatus = 'pending' | 'submitted' | 'approved' | 'rejected' | 'needs_action'
+
+export type SubscriptionPlanStatus = 'active' | 'past_due' | 'cancelled' | 'inactive' | 'none'
+
+export interface AdminUser {
+  id: string
+  email: string
+  name?: string
+  role: AdminUserRole
+  status: UserStatus
+  kycStatus: UserKycStatus
+  subscriptionPlan?: string
+  subscriptionStatus?: SubscriptionPlanStatus
+  isBanned: boolean
+  hasRestrictions: boolean
+  lastActive?: string
+  createdAt: string
+  updatedAt?: string
+  buyerId?: string
+  sellerId?: string
+}
+
+export interface AdminUserDetail extends AdminUser {
+  kycDocuments?: { type: string; url: string; status?: string }[]
+  bans?: { id: string; reason: string; startAt: string; endAt?: string; active: boolean }[]
+  restrictions?: { id: string; type: string; reasons: string[]; expiresAt?: string; startedAt?: string; active: boolean }[]
+  recentActivity?: AuditLogEntry[]
+  financialHolds?: { amount: number; reason: string }[]
+}
+
+export interface UserBanInput {
+  reason: string
+  endAt?: string
+}
+
+export interface UserRestrictionInput {
+  type: 'bidding' | 'listing' | 'withdrawal' | 'custom'
+  reasons: string[]
+  expiresAt?: string
+}
+
+export interface BulkActionInput {
+  userIds: string[]
+  action: 'invite' | 'resend_kyc' | 'change_plan' | 'ban' | 'restrict'
+  payload?: Record<string, unknown>
+}
+
+export interface UserBan {
+  id: string
+  userId: string
+  reason: string
+  startAt: string
+  endAt?: string
+  active: boolean
+}
+
+export interface UserRestriction {
+  id: string
+  userId: string
+  type: string
+  reasons: string[]
+  startedAt: string
+  expiresAt?: string
+  active: boolean
+}

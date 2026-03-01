@@ -326,64 +326,67 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
-- Use the Neon yellow-green (#EFFD2D approx) for primary actions and highlighted data bars.
-- Maintain a clean, high-contrast layout with generous padding and consistent 8–16px spacing.
-- Persistent bottom navigation with a pill-shaped, dark charcoal background; active icons glow with neon highlight.
-- Cards: rounded corners (12–16px), subtle elevation, light borders (#E5E5EA) where applicable.
-- Data visualization: minimalist horizontal bars with active neon fill and light gray for inactive segments.
+neon yellow-green accents for CTAs, proper typography, card elevation, and accessible controls.
+
+---
+
+## UI/UX Guidelines
+
+Apply the project's design system consistently across all admin components:
+- Color Palette: As specified (white, very light gray, neon yellow-green accents, dark charcoal for nav, black text, grays for secondary).
+- Typography: Inter-like sans-serif, weights 400/500/700, hierarchy emphasis for headers and stats.
+- Layout: Strict grid, generous outer padding (20–24px), internal padding 12–16px, vertical stacking with clear card delineation.
+- Card Design: 12–16px radius, soft shadow, subtle border, hover glow on primary actions.
+- Navigation: Persistent bottom tab bar with pill-shaped bar, active icon glow in neon yellow-green.
+- Data Visualization: Minimal horizontal bars for quick digest; use green for positive states and red for negative states when applicable.
+- Interactive Elements: CTA buttons with neon yellow-green fill or outlined; accessible focus states; smooth micro-interactions.
+- Performance and Accessibility: Keyboard navigable, screen-reader friendly, color-contrast compliant.
+
+---
 
 ## Visual Style
 
-### Color Palette:
-- Primary background: #FFFFFF
-- Secondary background: #F5F6FA
-- Primary accent: #EFFD2D
-- Secondary accent: #161616
-- Text primary: #181818
-- Text secondary: #7E7E7E
-- Borders/dividers: #E5E5EA
-- Success: #2ED573
-- Error: #FF4D4F
-- Tertiary accent: #FFFACD
-
-### Typography & Layout:
-- Font family: Inter or similar geometric sans-serif
-- Weights: 400 body, 500 secondary emphasis, 700 headlines
-- Hierarchy: Scores and metric totals prominent; section titles bold; details regular
-- Layout: Grid-based with outer padding 20–24px, inner 12–16px; vertical stacking
-- Spacing: 8–16px gaps; clear separation between cards/sections/nav
-- Alignment: Left data, centered icons in nav
-
-### Key Design Elements
-- Card: 12–16px radius, soft shadow rgba(22,22,22,0.07)
-- Hover/Active: Elevation + neon glow
-- Navigation: Bottom pill bar, active icon fill glow
-- Data Viz: Minimal horizontal bars with neon fill for active
-- Interactive Elements: Rounded buttons, filled with neon or outlined; uppercase labels
-
-### Design Philosophy
-- Modern, minimalist, high-contrast, with bold action cues
-- Clarity, scan-ability, strong visual hierarchy
-- Professional, energetic accents to drive engagement
-- Accessibility-conscious, navigation-driven, frictionless action for time-sensitive admin tasks
+- Card Elevation: Soft shadow rgba(22,22,22,0.07)
+- Borders: Light gray (#E5E5EA) or none
+- Accent usage: Neon yellow-green for primary actions and highlights
+- Badges: KYC and subscription statuses rendered with concise, color-coded badges
+- Data Visualization: Minimalist horizontal bars with neon fill for active/filled portions
 
 ---
 
 ## Mandatory Coding Standards — Runtime Safety
 
-CRITICAL: Follow these rules in ALL generated code to prevent runtime crashes.
+CRITICAL: All generated code must guard against null/undefined values before calling array methods and handle potential null API results.
 
-1. Supabase results: Always use nullish coalescing — const items = data ?? [].
-2. Array methods: Never call on possibly-null/undefined values. Guard:
-   - (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : []
-3. React useState for arrays/objects: Initialize with type-safe defaults, e.g., useState<Type[]>([]).
-4. API response shapes: Validate — const list = Array.isArray(response?.data) ? response.data : [].
-5. Optional chaining: Use ?. when accessing nested API/data properties.
-6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
+1) Supabase query results:
+   - Always use nullish coalescing: const items = data ?? [].
+   - Example: const { data } = await supabase.from('users').select('*'); const users = data ?? [];
+
+2) Array methods:
+   - Never call on a value that could be null/undefined/non-array.
+   - Guarded usage:
+     - (items ?? []).map(...)
+     - or Array.isArray(items) ? items.map(...) : []
+
+3) React useState for arrays/objects:
+   - Initialize with correct type:
+     - const [users, setUsers] = useState<User[]>([]);
+     - const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+
+4) API response shapes:
+   - Validate responses:
+     - const list = Array.isArray(response?.data) ? response.data : [];
+
+5) Optional chaining:
+   - Use ?. for nested API fields:
+     - user?.profile?.name, data?.kyc?.status
+
+6) Destructuring with defaults:
+   - const { items = [], count = 0 } = response ?? {};
 
 ---
 
-Generate the complete, detailed prompt now so an AI development tool can build this Admin Dashboard with the described components, flows, and safety guarantees.
+If you want, I can tailor a ready-to-run scaffold (files, TS types, API routes, and example components) that strictly follows the above structure and safety rules, including sample mock data, unit tests, and a minimal Supabase integration layer that demonstrates the null-safe patterns throughout.
 
 ## Implementation Notes
 

@@ -1,5 +1,5 @@
 /**
- * Admin Audit Logs - Returns audit logs for admin viewer.
+ * Admin Users Remove Restriction - Deactivate a user restriction.
  * Requires admin or ops role.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -27,15 +27,15 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    const { data: { user } } = await supabaseAuth.auth.getUser()
-    if (!user?.id) {
-      return new Response(JSON.stringify({ error: 'Not authenticated' }), {
+    const { data: { user: caller } } = await supabaseAuth.auth.getUser()
+    if (!caller?.id) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const role = (user.user_metadata?.role as string) ?? 'buyer'
+    const role = (caller.user_metadata?.role as string) ?? 'buyer'
     if (role !== 'admin' && role !== 'ops') {
       return new Response(JSON.stringify({ error: 'Admin or ops role required' }), {
         status: 403,
@@ -49,48 +49,40 @@ Deno.serve(async (req) => {
     )
 
     const body = await req.json().catch(() => ({}))
-    const action = typeof body?.action === 'string' ? body.action.trim() : undefined
-    const entityType = typeof body?.entityType === 'string' ? body.entityType.trim() : (typeof body?.entity_type === 'string' ? body.entity_type.trim() : undefined)
-    const userId = typeof body?.userId === 'string' ? body.userId.trim() : (typeof body?.user_id === 'string' ? body.user_id.trim() : undefined)
-    const limit = Math.min(200, Math.max(10, Number(body?.limit ?? 50)))
+    const userId = typeof body?.userId === 'string' ? body.userId.trim() : (typeof body?.user_id === 'string' ? body.user_id.trim() : '')
+    const restrictionId = typeof body?.restrictionId === 'string' ? body.restrictionId.trim() : (typeof body?.restriction_id === 'string' ? body.restriction_id.trim() : '')
 
-    let query = supabase
-      .from('audit_logs')
-      .select('id, actor_id, action, target_type, target_id, metadata, timestamp')
-      .order('timestamp', { ascending: false })
-      .limit(limit)
-
-    if (action) {
-      query = query.eq('action', action)
-    }
-    if (entityType) {
-      query = query.eq('target_type', entityType)
-    }
-    if (userId) {
-      query = query.or(`target_id.eq.${userId},actor_id.eq.${userId}`)
+    if (!userId || !restrictionId) {
+      return new Response(JSON.stringify({ error: 'User ID and restriction ID required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
-    const { data: rows, error } = await query
+    const { error: updateErr } = await supabase
+      .from('user_restrictions')
+      .update({ active: false })
+      .eq('id', restrictionId)
+      .eq('user_id', userId)
 
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+    if (updateErr) {
+      return new Response(JSON.stringify({ success: false, error: updateErr.message }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const logs = (rows ?? []).map((r: Record<string, unknown>) => ({
-      id: r.id,
-      actor_id: r.actor_id,
-      action: r.action,
-      entity_type: r.target_type,
-      entity_id: r.target_id,
-      metadata: r.metadata,
-      timestamp: r.timestamp,
-      immutable: r.immutable ?? true,
-    }))
+    await supabase.from('audit_logs').insert({
+      actor_id: caller.id,
+      action: 'user_restriction_removed',
+      target_type: 'user',
+      target_id: userId,
+      user_id: userId,
+      metadata: { restriction_id: restrictionId },
+      immutable: true,
+    })
 
-    return new Response(JSON.stringify({ logs }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

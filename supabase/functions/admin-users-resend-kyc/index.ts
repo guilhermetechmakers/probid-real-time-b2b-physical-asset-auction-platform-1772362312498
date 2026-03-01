@@ -1,5 +1,5 @@
 /**
- * Admin Audit Logs - Returns audit logs for admin viewer.
+ * Admin Users Resend KYC - Trigger KYC verification resend for a buyer.
  * Requires admin or ops role.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -27,15 +27,15 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    const { data: { user } } = await supabaseAuth.auth.getUser()
-    if (!user?.id) {
-      return new Response(JSON.stringify({ error: 'Not authenticated' }), {
+    const { data: { user: caller } } = await supabaseAuth.auth.getUser()
+    if (!caller?.id) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const role = (user.user_metadata?.role as string) ?? 'buyer'
+    const role = (caller.user_metadata?.role as string) ?? 'buyer'
     if (role !== 'admin' && role !== 'ops') {
       return new Response(JSON.stringify({ error: 'Admin or ops role required' }), {
         status: 403,
@@ -49,48 +49,38 @@ Deno.serve(async (req) => {
     )
 
     const body = await req.json().catch(() => ({}))
-    const action = typeof body?.action === 'string' ? body.action.trim() : undefined
-    const entityType = typeof body?.entityType === 'string' ? body.entityType.trim() : (typeof body?.entity_type === 'string' ? body.entity_type.trim() : undefined)
-    const userId = typeof body?.userId === 'string' ? body.userId.trim() : (typeof body?.user_id === 'string' ? body.user_id.trim() : undefined)
-    const limit = Math.min(200, Math.max(10, Number(body?.limit ?? 50)))
+    const id = typeof body?.id === 'string' ? body.id.trim() : ''
 
-    let query = supabase
-      .from('audit_logs')
-      .select('id, actor_id, action, target_type, target_id, metadata, timestamp')
-      .order('timestamp', { ascending: false })
-      .limit(limit)
-
-    if (action) {
-      query = query.eq('action', action)
-    }
-    if (entityType) {
-      query = query.eq('target_type', entityType)
-    }
-    if (userId) {
-      query = query.or(`target_id.eq.${userId},actor_id.eq.${userId}`)
-    }
-
-    const { data: rows, error } = await query
-
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
+    if (!id) {
+      return new Response(JSON.stringify({ error: 'User ID required' }), {
+        status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const logs = (rows ?? []).map((r: Record<string, unknown>) => ({
-      id: r.id,
-      actor_id: r.actor_id,
-      action: r.action,
-      entity_type: r.target_type,
-      entity_id: r.target_id,
-      metadata: r.metadata,
-      timestamp: r.timestamp,
-      immutable: r.immutable ?? true,
-    }))
+    const { data: buyer } = await supabase.from('buyers').select('id').eq('user_id', id).single()
+    const buyerId = (buyer as Record<string, unknown> | null)?.id as string | undefined
 
-    return new Response(JSON.stringify({ logs }), {
+    if (!buyerId) {
+      return new Response(JSON.stringify({ success: false, error: 'User is not a buyer' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    await supabase.from('kyc_records').update({ admin_review_status: 'pending', status: 'pending' }).eq('buyer_id', buyerId)
+
+    await supabase.from('audit_logs').insert({
+      actor_id: caller.id,
+      action: 'kyc_resend_requested',
+      target_type: 'user',
+      target_id: id,
+      user_id: id,
+      metadata: {},
+      immutable: true,
+    })
+
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

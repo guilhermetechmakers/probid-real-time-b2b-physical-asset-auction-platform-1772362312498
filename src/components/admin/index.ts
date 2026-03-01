@@ -1,5 +1,6 @@
 export { OpsReviewQueue } from './ops-review-queue'
 export { BuyerApprovalsConsole } from './buyer-approvals-console'
+export { UserManagementAdmin } from './user-management-admin'
 export { AuctionMonitor } from './auction-monitor'
 export { FinancePanel } from './finance-panel'
 export { DisputeManagement } from './dispute-management'
